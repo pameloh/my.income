@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Мои финансы</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="w">
+        <div class="top">
+            <h1>Финансы</h1>
+            <input type="month" id="month">
+        </div>
+
+        <nav id="nav">
+            <button data-t="o" class="on">Обзор</button>
+            <button data-t="t">Операции</button>
+            <button data-t="p">План</button>
+            <button data-t="h">Привычки</button>
+        </nav>
+
+        <!-- обзор -->
+        <section id="o">
+            <div class="balance-card">
+                <div class="balance-label">Свободный баланс</div>
+                <div class="balance-value" id="balance">0 ₽</div>
+                <div class="balance-sub" id="balanceSub"></div>
+                <div class="balance-actions">
+                    <button class="btn-topup" onclick="showTopup()">💰 Пополнить</button>
+                    <button class="btn-expense" onclick="showExpense()">🧾 Трата</button>
+                </div>
+            </div>
+
+            <div class="form-block">
+                <input id="quick" placeholder="Быстрая трата: «кофе 350» или «вчера такси 700»">
+                <button class="p" onclick="quickAdd()">Добавить</button>
+            </div>
+
+            <div class="form-block hidden" id="topupForm">
+                <input id="topupAmount" type="number" placeholder="Сумма пополнения, ₽">
+                <input id="topupNote" placeholder="Комментарий (необязательно)">
+                <button class="p" onclick="doTopup()">Пополнить</button>
+                <button class="ghost" onclick="hideTopup()">Отмена</button>
+            </div>
+
+            <div class="form-block hidden" id="expenseForm">
+                <input id="expAmount" type="number" placeholder="Сумма, ₽">
+                <select id="expCat"></select>
+                <input id="expNote" placeholder="На что (необязательно)">
+                <input id="expDate" type="date">
+                <button class="p" onclick="doExpense()">Добавить трату</button>
+                <button class="ghost" onclick="hideExpense()">Отмена</button>
+            </div>
+
+            <div class="g">
+                <div class="c"><div class="big" id="spent">0 ₽</div><div class="mu">Потрачено</div></div>
+                <div class="c"><div class="big" id="safeDay">0 ₽</div><div class="mu">Можно в день</div></div>
+                <div class="c"><div class="big" id="safeWeek">0 ₽</div><div class="mu">Можно в неделю</div></div>
+            </div>
+
+            <div class="dashboards">
+                <div class="c dashboard">
+                    <h2>📈 Траты по категориям</h2>
+                    <div id="catDashboard"></div>
+                </div>
+                <div class="c dashboard">
+                    <h2>💵 Пополнения за месяц</h2>
+                    <div id="topupDashboard"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- операции -->
+        <section id="t" hidden>
+            <div class="c">
+                <div class="row" style="margin-bottom:10px">
+                    <input id="search" placeholder="Поиск" oninput="render()">
+                    <select id="catFilter" onchange="render()"></select>
+                </div>
+                <div class="mu" id="opsSummary"></div>
+                <div id="list"></div>
+            </div>
+        </section>
+
+        <!-- план -->
+        <section id="p" hidden>
+            <div class="plan-grid">
+                <div class="c plan-block">
+                    <h2>🏛️ Основа месяца</h2>
+                    <div class="row">
+                        <input id="income" type="number" placeholder="Доход за месяц, ₽">
+                        <button class="p" onclick="saveIncome()">OK</button>
+                    </div>
+                    <div class="row" style="margin-top:12px">
+                        <input id="savePercent" type="number" placeholder="%" style="max-width:60px">
+                        <span class="mu" style="line-height:36px">% от дохода сразу в копилку</span>
+                    </div>
+                    <div class="mu" id="incomeInfo" style="margin-top:12px; line-height:1.6"></div>
+                </div>
+                <div class="c plan-block">
+                    <h2>📑 Постоянные платежи</h2>
+                    <div class="row">
+                        <input id="subName" placeholder="Название (аренда, инет)">
+                        <input id="subAmount" type="number" placeholder="₽">
+                        <input id="subDay" type="number" placeholder="День" min="1" max="31" style="max-width:70px">
+                        <button class="p" onclick="addSub()">+</button>
+                    </div>
+                    <div id="subs" style="margin-top:8px"></div>
+                </div>
+            </div>
+            <div class="plan-grid">
+                <div class="c plan-block">
+                    <h2>📥 Ручные пополнения</h2>
+                    <div id="topups"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- привычки -->
+        <section id="h" hidden>
+            <div class="c">
+                <h2>🏆 Новая привычка</h2>
+                <div class="row">
+                    <input id="habitName" placeholder="Например: спорт, чтение, вода">
+                    <button class="p" onclick="addHabit()">+</button>
+                </div>
+            </div>
+            <div class="g" id="habitsList"></div>
+        </section>
+    </div>
+
+    <div id="toast"></div>
+    <script src="script.js"></script>
+</body>
+</html>
