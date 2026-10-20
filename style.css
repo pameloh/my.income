@@ -222,11 +222,6 @@ button:disabled {
     font: 500 14px 'Space Grotesk', sans-serif;
 }
 
-@media (max-width: 600px) {
-    .g, .dashboards { grid-template-columns: 1fr; }
-    .hero-grid { grid-template-columns: 1fr; gap: 20px; }
-    .hero-value { font-size: 36px; }
-}
 
 /* идеи у конкурентов: иконки категорий (Copilot, Spendee), плитки категорий (CoinKeeper),
    нижнее меню и плавающая кнопка «+» как в мобильных приложениях */
@@ -252,49 +247,8 @@ nav button span { margin-right: 6px; }
 .nav-ic { display: flex; }
 .i { display: block; flex: none; }
 nav button small { font-size: 14px; }
-.fab { display: none; }
 
-@media (max-width: 600px) {
-    .w { padding: calc(16px + env(safe-area-inset-top)) 14px calc(96px + env(safe-area-inset-bottom)); }
-    h1 { font-size: 24px; }
-    .logo { width: 28px; height: 28px; }
-    input, select { font-size: 16px; }
-    button { min-height: 40px; }
 
-    nav {
-        position: fixed; left: 0; right: 0; bottom: 0; z-index: 40;
-        margin: 0; gap: 0;
-        background: rgba(8, 14, 26, 0.92);
-        backdrop-filter: blur(12px);
-        border-top: 1px solid var(--bd);
-        border-bottom: 0;
-        padding-bottom: env(safe-area-inset-bottom);
-    }
-    nav button { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; border: 0; padding: 8px 0 10px; min-height: 0; }
-    nav button span { margin: 0; font-size: 20px; }
-    nav button small { font-size: 11px; }
-    nav button.on small { color: var(--ac); }
-
-    .fab {
-        display: flex; align-items: center; justify-content: center;
-        position: fixed; right: 16px; bottom: calc(76px + env(safe-area-inset-bottom)); z-index: 45;
-        width: 54px; height: 54px; min-height: 54px; padding: 0; border-radius: 50%;
-        font-size: 28px; background: var(--ac); color: var(--btn);
-        box-shadow: 0 8px 24px rgba(122, 159, 212, 0.35);
-    }
-    #toast { bottom: calc(90px + env(safe-area-inset-bottom)); }
-
-    #expenseForm input, #topupForm input { min-width: 100%; }
-    section#o .g { grid-template-columns: 1fr 1fr; }
-    section#o .g .c:last-child { grid-column: 1 / -1; }
-    .big { font-size: 20px; }
-}
-
-@media (max-width: 380px) {
-    .hero-value { font-size: 30px; }
-    .big { font-size: 18px; }
-    nav button small { font-size: 10px; }
-}
 
 /* сводка месяца */
 .summary-card { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
@@ -319,6 +273,48 @@ dialog::backdrop { background: rgba(2, 4, 9, 0.72); }
 .sum-cell { background: var(--bg); border: 1px solid var(--bd); border-radius: 10px; padding: 12px; }
 dialog h2 { margin-top: 20px; }
 
+/* телефоны: тот же интерфейс, что на компьютере, только компактнее */
 @media (max-width: 600px) {
+    .w { padding: calc(14px + env(safe-area-inset-top)) 12px calc(24px + env(safe-area-inset-bottom)); }
+    input, select { font-size: 16px; }
+
+    .top { flex-wrap: nowrap; gap: 8px; margin-bottom: 14px; }
+    .top > div:first-child { min-width: 0; }
+    h1 { font-size: 22px; gap: 8px; }
+    .logo { width: 26px; height: 26px; }
+    .date-line { display: none; }
+    .monthbar { flex: none; gap: 2px; }
+    .top input { padding: 6px 8px; width: 128px; }
+    button.icon { width: 30px; height: 30px; font-size: 18px; }
+
+    nav { margin-bottom: 14px; }
+    nav button { flex: 1; justify-content: center; padding: 9px 2px; }
+    nav button span { margin-right: 4px; }
+    nav button small { font-size: 13px; }
+    .nav-ic svg { width: 17px; height: 17px; }
+
+    .balance-card { padding: 18px 14px; border-radius: 14px; }
+    .hero-grid { grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px; }
+    .hero-value { font-size: 28px; margin-bottom: 8px; }
+    .balance-label { font-size: 10px; letter-spacing: 1px; min-height: 2.6em; }
+    .seg button { padding: 7px 14px; min-height: 0; }
+    .balance-sub { font-size: 11px; margin-bottom: 0; }
+    .btn-topup, .btn-expense { padding: 9px 14px; }
+
+    .g { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    #habitsList { grid-template-columns: 1fr; }
+    .c { padding: 12px; }
+    .big { font-size: 16px; }
+    .g .mu { font-size: 11px; }
+    .dashboards { grid-template-columns: 1fr; }
+
+    #expenseForm input, #topupForm input { min-width: 100%; }
+
     dialog { margin: auto auto 0; width: 100%; max-width: 100%; border-radius: 16px 16px 0 0; max-height: 90vh; padding-bottom: calc(20px + env(safe-area-inset-bottom)); }
+}
+
+@media (max-width: 380px) {
+    .hero-value { font-size: 24px; }
+    .nav-ic { display: none; }
+    h1 { font-size: 20px; }
 }
