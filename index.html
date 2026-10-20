@@ -3,39 +3,65 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#05080f">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Мои финансы</title>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%230d1a2e'/%3E%3Cpath d='M8 21l5-6 4 3 7-9' fill='none' stroke='%237a9fd4' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='24' cy='9' r='2' fill='%23e6c44d'/%3E%3C/svg%3E">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="w">
         <div class="top">
-            <h1>Финансы</h1>
-            <input type="month" id="month">
+            <div>
+                <h1>
+                    <svg class="logo" viewBox="0 0 32 32" aria-hidden="true">
+                        <defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1b3358"/><stop offset="1" stop-color="#08101f"/></linearGradient></defs>
+                        <rect width="32" height="32" rx="9" fill="url(#lg)" stroke="#2a3d66"/>
+                        <path d="M8 21l5-6 4 3 7-9" fill="none" stroke="#7a9fd4" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+                        <circle cx="24" cy="9" r="2" fill="#e6c44d"/>
+                    </svg>
+                    Финансы
+                </h1>
+                <div class="date-line" id="dateLine"></div>
+            </div>
+            <div class="monthbar">
+                <button class="icon" onclick="shiftMonth(-1)">‹</button>
+                <input type="month" id="month">
+                <button class="icon" onclick="shiftMonth(1)">›</button>
+            </div>
         </div>
 
         <nav id="nav">
-            <button data-t="o" class="on">Обзор</button>
-            <button data-t="t">Операции</button>
-            <button data-t="p">План</button>
-            <button data-t="h">Привычки</button>
+            <button data-t="o" class="on"><span class="nav-ic" data-ic="grid"></span><small>Обзор</small></button>
+            <button data-t="t"><span class="nav-ic" data-ic="list"></span><small>Операции</small></button>
+            <button data-t="p"><span class="nav-ic" data-ic="target"></span><small>План</small></button>
+            <button data-t="h"><span class="nav-ic" data-ic="flame"></span><small>Привычки</small></button>
         </nav>
 
         <!-- обзор -->
         <section id="o">
             <div class="balance-card">
-                <div class="balance-label">Свободный баланс</div>
-                <div class="balance-value" id="balance">0 ₽</div>
-                <div class="balance-sub" id="balanceSub"></div>
-                <div class="balance-actions">
-                    <button class="btn-topup" onclick="showTopup()">💰 Пополнить</button>
-                    <button class="btn-expense" onclick="showExpense()">🧾 Трата</button>
+                <div class="hero-grid">
+                    <div>
+                        <div class="balance-label">Сегодня можно потратить</div>
+                        <div class="hero-value" id="todayLeft">—</div>
+                        <div class="meter"><i id="todayBar"></i></div>
+                        <div class="balance-sub" id="todaySub"></div>
+                    </div>
+                    <div>
+                        <div class="balance-label">До конца недели</div>
+                        <div class="hero-value" id="weekLeft">—</div>
+                        <div class="meter"><i id="weekBar"></i></div>
+                        <div class="balance-sub" id="weekSub"></div>
+                    </div>
                 </div>
-            </div>
-
-            <div class="form-block">
-                <input id="quick" placeholder="Быстрая трата: «кофе 350» или «вчера такси 700»">
-                <button class="p" onclick="quickAdd()">Добавить</button>
+                <div class="balance-actions">
+                    <button class="btn-topup" onclick="showTopup()">Пополнить</button>
+                    <button class="btn-expense" onclick="showExpense()">Трата</button>
+                </div>
             </div>
 
             <div class="form-block hidden" id="topupForm">
@@ -46,8 +72,9 @@
             </div>
 
             <div class="form-block hidden" id="expenseForm">
+                <div class="chips" id="expChips"></div>
+                <select id="expCat" hidden></select>
                 <input id="expAmount" type="number" placeholder="Сумма, ₽">
-                <select id="expCat"></select>
                 <input id="expNote" placeholder="На что (необязательно)">
                 <input id="expDate" type="date">
                 <button class="p" onclick="doExpense()">Добавить трату</button>
@@ -55,18 +82,23 @@
             </div>
 
             <div class="g">
-                <div class="c"><div class="big" id="spent">0 ₽</div><div class="mu">Потрачено</div></div>
-                <div class="c"><div class="big" id="safeDay">0 ₽</div><div class="mu">Можно в день</div></div>
-                <div class="c"><div class="big" id="safeWeek">0 ₽</div><div class="mu">Можно в неделю</div></div>
+                <div class="c"><div class="big" id="balance">0 ₽</div><div class="mu">Свободно на месяц</div></div>
+                <div class="c"><div class="big" id="spent">0 ₽</div><div class="mu">Потрачено за месяц</div></div>
+                <div class="c"><div class="big" id="piggyMini">0 ₽</div><div class="mu">В копилке</div></div>
+            </div>
+
+            <div class="seg">
+                <button data-p="day" class="on">Сегодня</button>
+                <button data-p="week">Неделя</button>
             </div>
 
             <div class="dashboards">
                 <div class="c dashboard">
-                    <h2>📈 Траты по категориям</h2>
+                    <h2>На что потрачено</h2>
                     <div id="catDashboard"></div>
                 </div>
                 <div class="c dashboard">
-                    <h2>💵 Пополнения за месяц</h2>
+                    <h2>Пополнения</h2>
                     <div id="topupDashboard"></div>
                 </div>
             </div>
@@ -82,13 +114,24 @@
                 <div class="mu" id="opsSummary"></div>
                 <div id="list"></div>
             </div>
+            <div class="c" style="margin-top:12px">
+                <h2>Ручные пополнения</h2>
+                <div id="topups"></div>
+            </div>
         </section>
 
         <!-- план -->
         <section id="p" hidden>
+            <div class="c plan-block summary-card">
+                <div>
+                    <h2 style="margin:0 0 4px">Итоги месяца</h2>
+                    <div class="mu">Куда ушли деньги и где вышел за бюджет</div>
+                </div>
+                <button class="p" onclick="openSummary()">Сводка месяца</button>
+            </div>
             <div class="plan-grid">
                 <div class="c plan-block">
-                    <h2>🏛️ Основа месяца</h2>
+                    <h2>Основа месяца</h2>
                     <div class="row">
                         <input id="income" type="number" placeholder="Доход за месяц, ₽">
                         <button class="p" onclick="saveIncome()">OK</button>
@@ -100,7 +143,7 @@
                     <div class="mu" id="incomeInfo" style="margin-top:12px; line-height:1.6"></div>
                 </div>
                 <div class="c plan-block">
-                    <h2>📑 Постоянные платежи</h2>
+                    <h2>Постоянные платежи</h2>
                     <div class="row">
                         <input id="subName" placeholder="Название (аренда, инет)">
                         <input id="subAmount" type="number" placeholder="₽">
@@ -112,8 +155,14 @@
             </div>
             <div class="plan-grid">
                 <div class="c plan-block">
-                    <h2>📥 Ручные пополнения</h2>
-                    <div id="topups"></div>
+                    <h2>Копилка</h2>
+                    <div class="big" id="piggyTotal">0 ₽</div>
+                    <div class="mu" id="piggyInfo" style="line-height:1.6"></div>
+                    <div class="row" style="margin-top:12px">
+                        <input id="piggyAmount" type="number" placeholder="Добавить вручную, ₽">
+                        <button class="p" onclick="addPiggy()">Положить</button>
+                    </div>
+                    <div id="piggyRows" style="margin-top:10px"></div>
                 </div>
             </div>
         </section>
@@ -121,7 +170,7 @@
         <!-- привычки -->
         <section id="h" hidden>
             <div class="c">
-                <h2>🏆 Новая привычка</h2>
+                <h2>Новая привычка</h2>
                 <div class="row">
                     <input id="habitName" placeholder="Например: спорт, чтение, вода">
                     <button class="p" onclick="addHabit()">+</button>
@@ -131,6 +180,15 @@
         </section>
     </div>
 
+    <dialog id="summary">
+        <div class="sheet-head">
+            <div class="sum-title" id="summaryTitle"></div>
+            <button class="icon" onclick="$('summary').close()" aria-label="Закрыть">✕</button>
+        </div>
+        <div id="summaryBody"></div>
+    </dialog>
+
+    <button class="fab" onclick="showExpense()" aria-label="Добавить трату">+</button>
     <div id="toast"></div>
     <script src="script.js"></script>
 </body>
