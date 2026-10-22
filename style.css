@@ -12,6 +12,8 @@
     color-scheme: dark;
 }
 
+[hidden] { display: none !important; }
+
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html, body { overflow-x: hidden; }
 button { touch-action: manipulation; }
@@ -249,6 +251,15 @@ nav button span { margin-right: 6px; }
 nav button small { font-size: 14px; }
 
 
+
+/* доход по неделям */
+.modes { display: flex; gap: 6px; margin-bottom: 12px; }
+.modes button { flex: 1; }
+.modes button.on { background: var(--ac); color: var(--btn); }
+.week-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 6px 0; border-bottom: 1px solid var(--bd); font-size: 13px; }
+.week-row:last-child { border: 0; }
+.week-row input { width: 120px; flex: none; text-align: right; }
+.week-row input.own { border-color: var(--ac); }
 
 /* сводка месяца */
 .summary-card { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
