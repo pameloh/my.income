@@ -4,6 +4,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="theme-color" content="#05080f">
+    <meta name="apple-mobile-web-app-title" content="Финансы">
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -82,8 +85,8 @@
             </div>
 
             <div class="g">
-                <div class="c"><div class="big" id="balance">0 ₽</div><div class="mu">Свободно на месяц</div></div>
-                <div class="c"><div class="big" id="spent">0 ₽</div><div class="mu">Потрачено за месяц</div></div>
+                <div class="c"><div class="big" id="balance">0 ₽</div><div class="mu" id="balanceLabel">Свободно на месяц</div></div>
+                <div class="c"><div class="big" id="spent">0 ₽</div><div class="mu" id="spentLabel">Потрачено за месяц</div></div>
                 <div class="c"><div class="big" id="piggyMini">0 ₽</div><div class="mu">В копилке</div></div>
             </div>
 
@@ -132,12 +135,25 @@
             <div class="plan-grid">
                 <div class="c plan-block">
                     <h2>Основа месяца</h2>
-                    <div class="row">
+                    <div class="modes">
+                        <button data-mode="month" class="on">Раз в месяц</button>
+                        <button data-mode="week">Каждую неделю</button>
+                    </div>
+                    <div class="row" id="incMonth">
                         <input id="income" type="number" placeholder="Доход за месяц, ₽">
                         <button class="p" onclick="saveIncome()">OK</button>
                     </div>
+                    <div id="incWeek" hidden>
+                        <div class="mu" id="weekLabel" style="margin-bottom:6px"></div>
+                        <div class="row">
+                            <input id="weekIncome" type="number" placeholder="Доход на эту неделю, ₽">
+                            <button class="p" onclick="saveWeekIncome()">OK</button>
+                        </div>
+                        <div class="mu" style="margin-top:8px">В понедельник начнётся новая неделя: впиши доход заново. Прошлые недели сохраняются.</div>
+                        <div id="weekList" style="margin-top:10px"></div>
+                    </div>
                     <div class="row" style="margin-top:12px">
-                        <input id="savePercent" type="number" placeholder="%" style="max-width:60px">
+                        <input id="savePercent" type="number" min="0" max="100" placeholder="0" style="max-width:60px" onchange="savePercentValue()">
                         <span class="mu" style="line-height:36px">% от дохода сразу в копилку</span>
                     </div>
                     <div class="mu" id="incomeInfo" style="margin-top:12px; line-height:1.6"></div>
