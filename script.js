@@ -57,12 +57,14 @@ const isoWeekday = (d = new Date()) => d.getDay() || 7;
 // чтобы комментарий вроде "<b>" не ломал страницу
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
-let S = { income: {}, savePercent: 20, pct: {}, piggy: [], topups: [], ex: [], subs: [], habits: [] };
+let S = { income: {}, incomeMode: {}, weekIncome: {}, payMode: "month", savePercent: 20, pct: {}, piggy: [], topups: [], ex: [], subs: [], habits: [] };
 
 try {
     const saved = localStorage.getItem("fin6");
     if (saved) S = Object.assign(S, JSON.parse(saved));
 } catch (e) {}
+
+delete S.weekRates;   // поле из прошлой версии, больше не нужно
 
 const save = () => {
     try { localStorage.setItem("fin6", JSON.stringify(S)); } catch (e) {}
@@ -229,7 +231,17 @@ const del = id => { S.ex = S.ex.filter(e => e.id != id); save(); render(); };
 
 // план
 function saveIncome() {
-    S.income[$("month").value] = +$("income").value || 0;
+    const m = $("month").value;
+    if (incomeModeFor(m) === "month") {      // в недельном режиме доход вписывается по неделям
+        S.income[m] = +$("income").value || 0;
+        S.incomeMode[m] = "month";
+    }
+    save();
+    render();
+}
+
+// процент в копилку: 0 или пустое поле = ничего не откладывать
+function savePercentValue() {
     const pct = Math.min(100, Math.max(0, +$("savePercent").value || 0));
     S.savePercent = pct;                  // для новых месяцев
     S.pct[$("month").value] = pct;        // старые месяцы не пересчитываются
@@ -319,11 +331,64 @@ document.querySelectorAll(".seg button").forEach(btn => {
     };
 });
 
+// ---- доход: раз в месяц или по неделям ----
+const addDays = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
+
+// недели (пн-вс), которые касаются месяца, и сколько дней каждой попадает в месяц
+function weeksOf(m) {
+    const [y, mo] = m.split("-").map(Number);
+    const first = new Date(y, mo - 1, 1);
+    const last = new Date(y, mo, 0);
+    const weeks = [];
+    for (let mon = addDays(first, 1 - isoWeekday(first)); mon <= last; mon = addDays(mon, 7)) {
+        const sun = addDays(mon, 6);
+        const from = mon < first ? first : mon;
+        const to = sun > last ? last : sun;
+        weeks.push({ key: iso(mon), mon, sun, days: Math.round((to - from) / 86400000) + 1 });
+    }
+    return weeks;
+}
+
+// доход недели: ровно то, что вписано на эту неделю (на следующую не переносится)
+const weekAmount = key => S.weekIncome[key] || 0;
+const currentWeekKey = () => iso(addDays(new Date(), 1 - isoWeekday()));
+
+// режим месяца: если там уже стоит месячный доход, он остаётся месячным
+const incomeModeFor = m => S.incomeMode[m] ?? (S.income[m] !== undefined ? "month" : S.payMode);
+
+// доход месяца; недели на стыке месяцев делятся по дням
+const incomeFor = m => incomeModeFor(m) === "week"
+    ? Math.round(weeksOf(m).reduce((sum, w) => sum + weekAmount(w.key) * w.days / 7, 0))
+    : (S.income[m] || 0);
+
+function saveWeekIncome() {
+    if ($("weekIncome").value === "") return toast("Введи сумму");
+    S.weekIncome[currentWeekKey()] = Math.max(0, +$("weekIncome").value || 0);
+    S.incomeMode[$("month").value] = S.payMode = "week";
+    save();
+    toast("Доход на неделю сохранён");
+    render();
+}
+
+function renderWeekPanel(m) {
+    const short = d => d.toLocaleDateString("ru-RU", { day: "numeric", month: "short" });
+    const mon = addDays(new Date(), 1 - isoWeekday());
+    $("weekLabel").textContent = `Текущая неделя: ${short(mon)} – ${short(addDays(mon, 6))}`;
+    if ($("weekIncome") !== document.activeElement) $("weekIncome").value = S.weekIncome[currentWeekKey()] ?? "";
+
+    // уже записанные недели выбранного месяца (только просмотр)
+    const past = weeksOf(m).filter(w => w.key !== currentWeekKey() && S.weekIncome[w.key] !== undefined);
+    $("weekList").innerHTML = past.length
+        ? '<div class="mu" style="margin-bottom:4px">Прошлые недели</div>' + past.map(w =>
+            `<div class="li"><span>${short(w.mon)} – ${short(w.sun)}</span><span>${fm(S.weekIncome[w.key])}</span></div>`).join("")
+        : "";
+}
+
 // процент накоплений у каждого месяца свой
 const pctFor = m => S.pct[m] ?? S.savePercent;
 
 function monthStats(m) {
-    const income = S.income[m] || 0;
+    const income = incomeFor(m);
     const saved = income * pctFor(m) / 100;
     const fixed = S.subs.reduce((sum, x) => sum + x.a, 0);
     const topups = S.topups.filter(t => t.date.startsWith(m)).reduce((sum, t) => sum + t.amount, 0);
@@ -350,12 +415,30 @@ function calc() {
     // пополнение «сегодня» гасит траты «сегодня»: чистые траты = траты − пополнения за день
     const topupsToday = S.topups.filter(t => t.date === today && t.date.startsWith(m)).reduce((sum, t) => sum + t.amount, 0);
     const netToday = spentToday - topupsToday;
-    const rate = rem > 0 ? Math.max(0, st.balance + netToday) / rem : 0;
-    const weekDays = Math.min(rem, 8 - isoWeekday());   // дней до воскресенья, включая сегодня
+    // недельный режим: лимиты считаем от дохода текущей недели, а не от месяца
+    let wk = null;
+    let pool = st.balance;
+    let rateDays = rem;
+    let weekDays = Math.min(rem, 8 - isoWeekday());   // дней до воскресенья, включая сегодня
+    if (rem > 0 && incomeModeFor(m) === "week") {
+        const mon = currentWeekKey();
+        const sun = iso(addDays(new Date(), 7 - isoWeekday()));
+        const inWeek = d => d >= mon && d <= sun;
+        const income = weekAmount(mon);
+        const saved = income * pctFor(m) / 100;
+        const fixed = st.fixed * 7 / daysInMonth;      // доля постоянных платежей на неделю
+        const spent = S.ex.filter(e => inWeek(e.d)).reduce((sum, e) => sum + e.a, 0);
+        const topups = S.topups.filter(t => inWeek(t.date)).reduce((sum, t) => sum + t.amount, 0);
+        wk = { income, saved, fixed, spent, topups, balance: income - saved - fixed + topups - spent };
+        pool = wk.balance;
+        rateDays = weekDays = 8 - isoWeekday();
+    }
+    const rate = rem > 0 ? Math.max(0, pool + netToday) / rateDays : 0;
 
     return {
-        m, ...st, by, rem, rate, spentToday, netToday, weekDays,
+        m, ...st, by, rem, rate, spentToday, netToday, weekDays, wk,
         topupsMonth: st.topups,
+        hasIncome: wk ? wk.income > 0 || wk.topups > 0 : st.income > 0 || st.topups > 0,
         todayLeft: rate - netToday,
         weekLimit: rate * weekDays,
         weekLeft: rate * weekDays - netToday
@@ -365,13 +448,21 @@ function calc() {
 // копилка = процент с дохода + нетронутые остатки прошлых месяцев + то, что положил вручную
 function piggyBank() {
     const nowMonth = today.slice(0, 7);
-    const months = new Set([
-        ...Object.keys(S.income),
-        ...S.ex.map(e => e.d.slice(0, 7)),
-        ...S.topups.map(t => t.date.slice(0, 7))
-    ]);
+    const keys = [
+        ...Object.keys(S.income), ...Object.keys(S.incomeMode),
+        ...Object.keys(S.weekIncome).map(k => k.slice(0, 7)),
+        ...S.ex.map(e => e.d.slice(0, 7)), ...S.topups.map(t => t.date.slice(0, 7))
+    ].filter(k => k <= nowMonth).sort();
+    const months = [];
+    if (keys.length) {                       // месяцы без записей тоже считаем: в недельном режиме доход идёт сам
+        let [y, mo] = keys[0].split("-").map(Number);
+        for (let m = keys[0]; m <= nowMonth; m = `${y}-${String(mo).padStart(2, "0")}`) {
+            months.push(m);
+            if (++mo > 12) { mo = 1; y++; }
+        }
+    }
     let percentSum = 0, leftoverSum = 0;
-    const rows = [...months].filter(m => m <= nowMonth).sort().map(m => {
+    const rows = months.map(m => {
         const st = monthStats(m);
         const leftover = m < nowMonth ? Math.max(0, st.balance) : 0; // текущий месяц ещё не закончился
         percentSum += st.saved;
@@ -468,7 +559,7 @@ function renderTopupDashboard() {
 
 // большая карточка: лимит и остаток на сегодня и на неделю
 function renderHero(k) {
-    const hasBudget = k.rem > 0 && (k.income > 0 || k.topupsMonth > 0);
+    const hasBudget = k.rem > 0 && k.hasIncome;
 
     const show = (id, left, limit, spentPart) => {
         $(id + "Left").textContent = hasBudget ? fm(left) : "—";
@@ -500,20 +591,30 @@ function render() {
 
     renderHero(k);
 
-    $("balance").textContent = fm(k.balance);
-    $("balance").className = "big " + (k.balance < 0 ? "bad" : "");
-    $("spent").textContent = fm(k.spent);
+    const freeNow = k.wk ? k.wk.balance : k.balance;
+    $("balance").textContent = fm(freeNow);
+    $("balance").className = "big " + (freeNow < 0 ? "bad" : "");
+    $("spent").textContent = fm(k.wk ? k.wk.spent : k.spent);
+    $("balanceLabel").textContent = k.wk ? "Свободно на неделю" : "Свободно на месяц";
+    $("spentLabel").textContent = k.wk ? "Потрачено за неделю" : "Потрачено за месяц";
 
     renderCatDashboard();
     renderTopupDashboard();
     renderPiggy();
 
     // вкладка «План»
-    $("income").value = k.income || "";
+    const mode = incomeModeFor(k.m);
+    document.querySelectorAll(".modes button").forEach(b => b.classList.toggle("on", b.dataset.mode === mode));
+    $("incMonth").hidden = mode === "week";
+    $("incWeek").hidden = mode !== "week";
+    $("income").value = mode === "month" ? (S.income[k.m] || "") : "";
+    if (mode === "week") renderWeekPanel(k.m);
     $("savePercent").value = pctFor(k.m);
-    $("incomeInfo").innerHTML = k.income > 0
-        ? `В копилку уходит: <b>${fm(k.saved)}</b><br>Постоянные платежи: <b>${fm(k.fixed)}</b><br>Чистый бюджет на жизнь: <b style="color:var(--ac)">${fm(k.income - k.saved - k.fixed)}</b>`
-        : "Введи доход, чтобы увидеть распределение";
+    $("incomeInfo").innerHTML = k.wk
+        ? `Доход на неделю: <b>${fm(k.wk.income)}</b><br>В копилку уходит: <b>${fm(k.wk.saved)}</b><br>Постоянные платежи (доля недели): <b>${fm(k.wk.fixed)}</b><br>Чистый бюджет на неделю: <b style="color:var(--ac)">${fm(k.wk.income - k.wk.saved - k.wk.fixed)}</b>`
+        : k.income > 0
+            ? `${mode === "week" ? `Доход за месяц по неделям: <b>${fm(k.income)}</b><br>` : ""}В копилку уходит: <b>${fm(k.saved)}</b><br>Постоянные платежи: <b>${fm(k.fixed)}</b><br>Чистый бюджет на жизнь: <b style="color:var(--ac)">${fm(k.income - k.saved - k.fixed)}</b>`
+            : "Введи доход, чтобы увидеть распределение";
 
     const topupsList = S.topups.filter(t => t.date.startsWith(k.m));
     $("topups").innerHTML = topupsList.map(t =>
@@ -555,6 +656,15 @@ function render() {
     }).join("") || emptyText("Добавь первую привычку");
 }
 
+// переключатель «Раз в месяц / Каждую неделю»
+document.querySelectorAll(".modes button").forEach(btn => {
+    btn.onclick = () => {
+        S.incomeMode[$("month").value] = S.payMode = btn.dataset.mode;
+        save();
+        render();
+    };
+});
+
 // пока печатаешь комментарий, категория подставляется сама
 $("expNote").oninput = e => {
     if (e.target.value) setCat(guess(e.target.value));
@@ -562,9 +672,14 @@ $("expNote").oninput = e => {
 
 // Enter отправляет форму
 [["expAmount", doExpense], ["expNote", doExpense],
- ["topupAmount", doTopup], ["piggyAmount", addPiggy], ["topupNote", doTopup], ["habitName", addHabit]
+ ["topupAmount", doTopup], ["weekIncome", saveWeekIncome], ["piggyAmount", addPiggy], ["topupNote", doTopup], ["habitName", addHabit]
 ].forEach(([id, fn]) => {
     $(id).addEventListener("keydown", e => { if (e.key === "Enter") fn(); });
 });
 
 render();
+
+// чтобы сайт ставился как приложение и работал без интернета
+if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
+    navigator.serviceWorker.register("sw.js").catch(() => {});
+}
