@@ -13,7 +13,7 @@
     <title>Мои финансы</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%230d1a2e'/%3E%3Cpath d='M8 21l5-6 4 3 7-9' fill='none' stroke='%237a9fd4' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='24' cy='9' r='2' fill='%23e6c44d'/%3E%3C/svg%3E">
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=3">
 </head>
 <body>
     <div class="w">
@@ -36,14 +36,12 @@
                 <button class="icon" onclick="shiftMonth(1)">›</button>
             </div>
         </div>
-
         <nav id="nav">
             <button data-t="o" class="on"><span class="nav-ic" data-ic="grid"></span><small>Обзор</small></button>
             <button data-t="t"><span class="nav-ic" data-ic="list"></span><small>Операции</small></button>
             <button data-t="p"><span class="nav-ic" data-ic="target"></span><small>План</small></button>
             <button data-t="h"><span class="nav-ic" data-ic="flame"></span><small>Привычки</small></button>
         </nav>
-
         <!-- обзор -->
         <section id="o">
             <div class="balance-card">
@@ -66,14 +64,12 @@
                     <button class="btn-expense" onclick="showExpense()">Трата</button>
                 </div>
             </div>
-
             <div class="form-block hidden" id="topupForm">
                 <input id="topupAmount" type="number" placeholder="Сумма пополнения, ₽">
                 <input id="topupNote" placeholder="Комментарий (необязательно)">
                 <button class="p" onclick="doTopup()">Пополнить</button>
                 <button class="ghost" onclick="hideTopup()">Отмена</button>
             </div>
-
             <div class="form-block hidden" id="expenseForm">
                 <div class="chips" id="expChips"></div>
                 <select id="expCat" hidden></select>
@@ -83,18 +79,15 @@
                 <button class="p" onclick="doExpense()">Добавить трату</button>
                 <button class="ghost" onclick="hideExpense()">Отмена</button>
             </div>
-
             <div class="g">
                 <div class="c"><div class="big" id="balance">0 ₽</div><div class="mu">Свободно на месяц</div></div>
                 <div class="c"><div class="big" id="spent">0 ₽</div><div class="mu">Потрачено за месяц</div></div>
                 <div class="c"><div class="big" id="piggyMini">0 ₽</div><div class="mu">В копилке</div></div>
             </div>
-
             <div class="seg">
                 <button data-p="day" class="on">Сегодня</button>
                 <button data-p="week">Неделя</button>
             </div>
-
             <div class="dashboards">
                 <div class="c dashboard">
                     <h2>На что потрачено</h2>
@@ -106,7 +99,6 @@
                 </div>
             </div>
         </section>
-
         <!-- операции -->
         <section id="t" hidden>
             <div class="c">
@@ -122,7 +114,6 @@
                 <div id="topups"></div>
             </div>
         </section>
-
         <!-- план -->
         <section id="p" hidden>
             <div class="c plan-block summary-card">
@@ -137,11 +128,13 @@
                     <h2>Основа месяца</h2>
                     <div class="row">
                         <input id="income" type="number" placeholder="Доход, ₽">
-                        <select id="incomeUnit">
+                        <button class="p" onclick="saveIncome()">OK</button>
+                    </div>
+                    <div class="row" style="margin-top:10px">
+                        <select id="incomeUnit" style="flex:1">
                             <option value="month">в месяц</option>
                             <option value="week">в неделю</option>
                         </select>
-                        <button class="p" onclick="saveIncome()">OK</button>
                     </div>
                     <div class="row" style="margin-top:12px">
                         <input id="savePercent" type="number" placeholder="%" style="max-width:60px">
@@ -173,7 +166,6 @@
                 </div>
             </div>
         </section>
-
         <!-- привычки -->
         <section id="h" hidden>
             <div class="c">
@@ -186,7 +178,6 @@
             <div class="g" id="habitsList"></div>
         </section>
     </div>
-
     <dialog id="summary">
         <div class="sheet-head">
             <div class="sum-title" id="summaryTitle"></div>
