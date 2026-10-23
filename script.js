@@ -46,7 +46,7 @@ const DAY_NAMES = ['', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
 const ALL_DAYS = [1, 2, 3, 4, 5, 6, 7];
 
 const $ = id => document.getElementById(id);
-const guess = t => cn.find(c => RU[c] && RU[c].test(t)) || "Другое";
+const guess = t => cn.find(c => RU[c] && RU[c].test(t));   // нет совпадения: категорию не трогаем
 const fm = n => Math.round(n).toLocaleString("ru-RU") + " ₽";
 const iso = d => d.toLocaleDateString("sv");
 const today = iso(new Date());
@@ -57,18 +57,171 @@ const isoWeekday = (d = new Date()) => d.getDay() || 7;
 // чтобы комментарий вроде "<b>" не ломал страницу
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
-let S = { income: {}, incomeMode: {}, weekIncome: {}, payMode: "month", savePercent: 20, pct: {}, piggy: [], topups: [], ex: [], subs: [], habits: [] };
+const emptyData = () => ({
+    income: {}, incomeMode: {}, weekIncome: {}, payMode: "month",
+    savePercent: 20, pct: {}, piggy: [], topups: [], ex: [], subs: [], habits: []
+});
+let S = emptyData();
 
 try {
     const saved = localStorage.getItem("fin6");
     if (saved) S = Object.assign(S, JSON.parse(saved));
-} catch (e) {}
+} catch (e) { /* хранилище недоступно: работаем без сохранения */ }
 
 delete S.weekRates;   // поле из прошлой версии, больше не нужно
 
 const save = () => {
-    try { localStorage.setItem("fin6", JSON.stringify(S)); } catch (e) {}
+    S.savedAt = Date.now();
+    try {
+        localStorage.setItem("fin6", JSON.stringify(S));
+    } catch (e) {
+        $("storageWarn").hidden = false;     // браузер не даёт сохранять
+    }
+    if (fileReady) {                         // копия в файл на диске, чуть позже, чтобы не писать на каждую букву
+        clearTimeout(fileTimer);
+        fileTimer = setTimeout(() => writeDataFile().catch(() => { fileReady = false; renderFileStatus(); }), 300);
+    }
 };
+
+// хранилище закрыто (инкогнито, встроенный просмотр): предупреждаем сразу, а не после потери данных
+try {
+    localStorage.setItem("fin6test", "1");
+    localStorage.removeItem("fin6test");
+} catch (e) {
+    $("storageWarn").hidden = false;
+}
+
+// просим браузер не стирать данные сам, когда мало места
+if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
+
+// ---- файл данных ----
+// Браузер может сам стирать данные сайта при закрытии. Файл на диске он не трогает.
+const canUseFile = "showSaveFilePicker" in window && "showOpenFilePicker" in window;
+const JSON_TYPES = [{ description: "Данные Финансов", accept: { "application/json": [".json"] } }];
+let dataFile = null;      // выбранный файл
+let fileReady = false;    // разрешение есть, можно писать
+let fileTimer = null;
+
+// выбранный файл запоминаем в браузере, чтобы в следующий раз не искать его заново
+function handleStore(mode, handle) {
+    return new Promise((resolve, reject) => {
+        const open = indexedDB.open("finance-files", 1);
+        open.onupgradeneeded = () => open.result.createObjectStore("h");
+        open.onerror = () => reject(open.error);
+        open.onsuccess = () => {
+            const store = open.result.transaction("h", mode).objectStore("h");
+            const req = mode === "readwrite" ? store.put(handle, "file") : store.get("file");
+            req.onsuccess = () => resolve(req.result || null);
+            req.onerror = () => reject(req.error);
+        };
+    });
+}
+
+async function writeDataFile() {
+    const stream = await dataFile.createWritable();
+    await stream.write(JSON.stringify(S, null, 2));
+    await stream.close();
+}
+
+async function readDataFile() {
+    const text = await (await dataFile.getFile()).text();
+    if (!text.trim()) return null;           // пустой файл: считаем новым
+    const data = JSON.parse(text);
+    if (!data || !Array.isArray(data.ex)) throw new Error("не файл данных");
+    return data;
+}
+
+function renderFileStatus() {
+    $("fileCreate").hidden = $("fileOpen").hidden = !canUseFile;
+    $("fileBanner").hidden = !(dataFile && !fileReady);
+    $("fileStatus").textContent = !canUseFile
+        ? "Этот браузер не умеет сохранять в файл (нужен Chrome, Edge или Comet). Скачивай копию вручную."
+        : fileReady ? `Подключён: ${dataFile.name}. Данные сохраняются в него сами.`
+        : dataFile ? `Файл «${dataFile.name}» запомнен, нужно подтвердить доступ кнопкой «Подключить».`
+        : "Файл не подключён.";
+}
+
+async function createDataFile() {
+    try {
+        dataFile = await showSaveFilePicker({ suggestedName: "finance-data.json", types: JSON_TYPES });
+        await handleStore("readwrite", dataFile);
+        fileReady = true;
+        await writeDataFile();
+        toast("Файл данных создан");
+    } catch (e) {
+        if (e.name !== "AbortError") toast("Не удалось создать файл");
+    }
+    renderFileStatus();
+}
+
+async function openDataFile() {
+    try {
+        [dataFile] = await showOpenFilePicker({ types: JSON_TYPES });
+        await handleStore("readwrite", dataFile);
+        fileReady = true;
+        const data = await readDataFile();
+        if (data) {
+            S = Object.assign(emptyData(), data);
+            save();
+            render();
+            toast("Данные загружены из файла");
+        } else {
+            await writeDataFile();
+        }
+    } catch (e) {
+        fileReady = false;
+        if (e.name !== "AbortError") toast("Не удалось открыть файл");
+    }
+    renderFileStatus();
+}
+
+// при новом запуске браузер просит подтвердить доступ к файлу: нужен один клик
+async function reconnectFile(byClick) {
+    if (!dataFile) return renderFileStatus();
+    try {
+        const mode = { mode: "readwrite" };
+        let access = await dataFile.queryPermission(mode);
+        if (access !== "granted" && byClick) access = await dataFile.requestPermission(mode);
+        if (access === "granted") {
+            const data = await readDataFile();
+            if (data && (data.savedAt || 0) > (S.savedAt || 0)) {   // в файле данные новее, чем в браузере
+                S = Object.assign(emptyData(), data);
+                save();
+                render();
+            } else {
+                await writeDataFile();
+            }
+            fileReady = true;
+        }
+    } catch (e) {
+        fileReady = false;
+    }
+    renderFileStatus();
+}
+
+// копия в файл вручную и восстановление из неё
+function exportData() {
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(new Blob([JSON.stringify(S, null, 2)], { type: "application/json" }));
+    link.download = `finance-backup-${today}.json`;
+    link.click();
+    URL.revokeObjectURL(link.href);
+    toast("Копия сохранена");
+}
+
+async function importData(file) {
+    try {
+        const data = JSON.parse(await file.text());
+        if (!data || !Array.isArray(data.ex)) throw new Error("не похоже на копию");
+        if (!confirm("Заменить текущие данные данными из файла?")) return;
+        S = Object.assign(emptyData(), data);
+        save();
+        render();
+        toast("Данные восстановлены");
+    } catch (e) {
+        toast("Не удалось прочитать файл");
+    }
+}
 
 const toast = text => {
     const el = $("toast");
@@ -656,6 +809,12 @@ function render() {
     }).join("") || emptyText("Добавь первую привычку");
 }
 
+$("importFile").onchange = e => {
+    const file = e.target.files[0];
+    e.target.value = "";
+    if (file) importData(file);
+};
+
 // переключатель «Раз в месяц / Каждую неделю»
 document.querySelectorAll(".modes button").forEach(btn => {
     btn.onclick = () => {
@@ -667,7 +826,8 @@ document.querySelectorAll(".modes button").forEach(btn => {
 
 // пока печатаешь комментарий, категория подставляется сама
 $("expNote").oninput = e => {
-    if (e.target.value) setCat(guess(e.target.value));
+    const cat = guess(e.target.value);
+    if (cat) setCat(cat);
 };
 
 // Enter отправляет форму
@@ -679,7 +839,5 @@ $("expNote").oninput = e => {
 
 render();
 
-// чтобы сайт ставился как приложение и работал без интернета
-if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
-    navigator.serviceWorker.register("sw.js").catch(() => {});
-}
+renderFileStatus();
+if (canUseFile) handleStore("readonly").then(h => { dataFile = h; return reconnectFile(false); }).catch(() => {});
