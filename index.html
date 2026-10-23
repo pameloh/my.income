@@ -4,19 +4,20 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="theme-color" content="#05080f">
-    <meta name="apple-mobile-web-app-title" content="Финансы">
-    <link rel="manifest" href="manifest.webmanifest">
-    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Мои финансы</title>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%230d1a2e'/%3E%3Cpath d='M8 21l5-6 4 3 7-9' fill='none' stroke='%237a9fd4' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='24' cy='9' r='2' fill='%23e6c44d'/%3E%3C/svg%3E">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="w">
+        <div class="warn" id="storageWarn" hidden>
+            Браузер не даёт сохранять данные: всё пропадёт при закрытии. Так бывает в режиме инкогнито, во встроенном просмотре или если в настройках включена очистка данных сайтов при выходе. Открой сайт в обычном окне и разреши ему хранить данные.
+        </div>
+        <div class="warn" id="fileBanner" hidden>
+            Файл данных не подключён: сейчас данные пишутся только в браузер, а он может их стереть.
+            <button class="p" onclick="reconnectFile(true)" style="margin-left:8px">Подключить</button>
+        </div>
         <div class="top">
             <div>
                 <h1>
@@ -179,6 +180,20 @@
                         <button class="p" onclick="addPiggy()">Положить</button>
                     </div>
                     <div id="piggyRows" style="margin-top:10px"></div>
+                </div>
+            </div>
+            <div class="c plan-block">
+                <h2>Хранение данных</h2>
+                <div class="mu" style="margin-bottom:10px">Данные лежат в браузере, а браузер иногда стирает их при закрытии. Файл на диске этого не боится: подключи его один раз, и данные будут сохраняться в него сами.</div>
+                <div class="row">
+                    <button id="fileCreate" class="p" onclick="createDataFile()">Создать файл данных</button>
+                    <button id="fileOpen" onclick="openDataFile()">Открыть файл данных</button>
+                </div>
+                <div class="mu" id="fileStatus" style="margin:10px 0"></div>
+                <div class="row">
+                    <button onclick="exportData()">Скачать копию</button>
+                    <button onclick="$('importFile').click()">Загрузить копию</button>
+                    <input id="importFile" type="file" accept="application/json,.json" hidden>
                 </div>
             </div>
         </section>
