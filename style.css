@@ -1,5 +1,3 @@
-[hidden] { display: none !important; }
-
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html, body { overflow-x: hidden; }
 button { touch-action: manipulation; }
@@ -158,6 +156,7 @@ button:disabled {
 .cat-bar-amount { color: var(--mu); font-size: 12px; }
 .cat-bar-track { height: 6px; background: var(--bd); border-radius: 3px; overflow: hidden; }
 .cat-bar-fill { height: 100%; border-radius: 3px; transition: width 0.3s; }
+.cat-bar-percent { font-size: 11px; color: var(--mu); margin-top: 2px; text-align: right; }
 
 .topup-mini { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--bd); font-size: 13px; }
 .topup-mini-amount { color: var(--ok); font: 600 13px 'Space Grotesk', sans-serif; }
@@ -232,13 +231,6 @@ nav button span { margin-right: 6px; }
 .nav-ic { display: flex; }
 .i { display: block; flex: none; }
 nav button small { font-size: 14px; }
-
-/* доход по неделям */
-.modes { display: flex; gap: 6px; margin-bottom: 12px; }
-.modes button { flex: 1; }
-.modes button.on { background: var(--ac); color: var(--btn); }
-
-.warn { background: rgba(212, 100, 92, 0.12); border: 1px solid var(--bad); border-radius: 12px; padding: 12px 14px; margin-bottom: 14px; font-size: 13px; }
 
 /* сводка месяца */
 .summary-card { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
