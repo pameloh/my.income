@@ -64,18 +64,25 @@ h2 {
 nav { display: flex; gap: 4px; border-bottom: 1px solid var(--bd); margin-bottom: 20px; }
 
 nav button {
-    border: 0;
-    border-bottom: 2px solid transparent;
-    border-radius: 0;
+    border: 0 !important;
+    border-bottom: 2px solid transparent !important;
+    border-radius: 0 !important;
+    background: transparent !important;
     color: var(--mu);
-    padding: 10px 14px;
-    font: 500 14px 'Space Grotesk', sans-serif;
+    padding: 10px 14px !important;
+    font: 500 14px 'Space Grotesk', sans-serif !important;
     display: flex;
     align-items: center;
+    box-shadow: none !important;
 }
 
-@media (hover: hover) { nav button:hover { background: transparent; color: var(--tx); } }
-nav button.on { color: var(--tx); border-color: var(--ac); }
+nav button span { margin-right: 6px; }
+.nav-ic { display: flex; }
+.i { display: block; flex: none; }
+nav button small { font-size: 14px; }
+
+@media (hover: hover) { nav button:hover { background: transparent !important; color: var(--tx); } }
+nav button.on { color: var(--tx); border-color: var(--ac) !important; }
 
 .g { display: grid; gap: 12px; grid-template-columns: repeat(3, 1fr); margin-bottom: 12px; }
 
@@ -128,7 +135,6 @@ button:disabled {
 .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 .row > input, .row > select { flex: 1; min-width: 80px; }
 
-/* главный блок с балансом */
 .balance-card {
     background: radial-gradient(500px 220px at 50% -30%, rgba(122, 159, 212, 0.20), transparent), linear-gradient(135deg, #0d1a2e, #081020);
     border: 1px solid var(--bd);
@@ -164,7 +170,6 @@ button:disabled {
 .seg { display: flex; gap: 6px; margin-bottom: 12px; }
 .seg button.on { background: var(--ac); color: var(--btn); }
 
-/* формы */
 .form-block {
     background: var(--card);
     border: 1px solid var(--ac);
@@ -179,7 +184,6 @@ button:disabled {
 .form-block.hidden { display: none; }
 .form-block input, .form-block select { flex: 1; min-width: 120px; }
 
-/* дашборды */
 .dashboards { display: grid; gap: 12px; grid-template-columns: 1fr 1fr; margin-bottom: 12px; }
 .dashboard { min-height: 200px; }
 .dashboard .items { max-height: 220px; overflow-y: auto; margin-top: 10px; }
@@ -197,7 +201,6 @@ button:disabled {
 .topup-mini-amount { color: var(--ok); font: 600 13px 'Space Grotesk', sans-serif; }
 .topup-total { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--bd); display: flex; justify-content: space-between; font: 600 14px 'Space Grotesk', sans-serif; }
 
-/* план и списки */
 .plan-grid { display: grid; gap: 12px; margin-bottom: 12px; }
 .plan-block { padding: 20px; }
 
@@ -206,7 +209,6 @@ button:disabled {
 .x { color: var(--mu); cursor: pointer; margin-left: 8px; font-size: 16px; }
 @media (hover: hover) { .x:hover { color: var(--bad); } }
 
-/* привычки */
 .habit-card { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 6px; }
 .habit-name { font: 600 15px 'Space Grotesk', sans-serif; }
 .habit-streak { color: var(--gold); line-height: 1; font: 700 32px 'Space Grotesk', sans-serif; display: flex; align-items: center; gap: 8px; }
@@ -268,12 +270,6 @@ button.icon {
 
 .empty { text-align: center; padding: 24px 0; color: var(--mu); font-size: 13px; }
 
-nav button span { margin-right: 6px; }
-.nav-ic { display: flex; }
-.i { display: block; flex: none; }
-nav button small { font-size: 14px; }
-
-/* сводка месяца */
 .summary-card { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
 
 dialog {
@@ -296,7 +292,6 @@ dialog::backdrop { background: rgba(2, 4, 9, 0.72); }
 .sum-cell { background: var(--bg); border: 1px solid var(--bd); border-radius: 10px; padding: 12px; }
 dialog h2 { margin-top: 20px; }
 
-/* Ползунок «в месяц / в неделю» */
 .unit-toggle {
     display: flex;
     background: var(--bg);
@@ -323,7 +318,6 @@ dialog h2 { margin-top: 20px; }
 }
 @media (hover: hover) { .unit-btn:hover:not(.on) { color: var(--tx); } }
 
-/* телефоны: тот же интерфейс, что на компьютере, только компактнее */
 @media (max-width: 600px) {
     .w { padding: calc(14px + env(safe-area-inset-top)) 12px calc(24px + env(safe-area-inset-bottom)); }
     input, select { font-size: 16px; }
@@ -338,7 +332,7 @@ dialog h2 { margin-top: 20px; }
     button.icon { width: 30px; height: 30px; font-size: 18px; }
 
     nav { margin-bottom: 14px; }
-    nav button { flex: 1; justify-content: center; padding: 9px 2px; }
+    nav button { flex: 1; justify-content: center; padding: 9px 2px !important; }
     nav button span { margin-right: 4px; }
     nav button small { font-size: 13px; }
     .nav-ic svg { width: 17px; height: 17px; }
