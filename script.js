@@ -8,10 +8,8 @@ const CATS = {
     "Другое": "#5a6a7a"
 };
 const cn = Object.keys(CATS);
-
 const ICONS = { "Еда": "food", "Дом": "home", "Транспорт": "car", "Развлечения": "play", "Здоровье": "heart", "Покупки": "bag", "Другое": "dots" };
 
-// линейные иконки (24x24), цвет берут у текста
 const PATHS = {
     food: '<path d="M3 2v7a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2V2M7 2v20M21 15V2a5 5 0 0 0-5 5v6a2 2 0 0 0 2 2h3Zm0 0v7"/>',
     home: '<path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM9 22V12h6v10"/>',
@@ -26,13 +24,13 @@ const PATHS = {
     target: '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
     flame: '<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.4-.5-2-1-3-1.1-2.1-.2-4 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.2.4-2.3 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>'
 };
+
 const icon = (name, size = 20) =>
     `<svg class="i" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${PATHS[name]}</svg>`;
 const badge = c => `<span class="ico" style="background:${CATS[c]}26;color:${CATS[c]}">${icon(ICONS[c] || "dots", 18)}</span>`;
 
 document.querySelectorAll("[data-ic]").forEach(el => el.innerHTML = icon(el.dataset.ic, 22));
 
-// по этим словам угадываем категорию
 const RU = {
     "Еда": /кофе|еда|обед|ужин|завтрак|пят[её]р|магнит|перекр|вкусвилл|лент|ресторан|кафе|пицц|суши|доставк|продукт|макдон|булк/i,
     "Дом": /аренд|квартир|жкх|свет|интернет|ремонт|мебел|икеа/i,
@@ -50,11 +48,7 @@ const guess = t => cn.find(c => RU[c] && RU[c].test(t)) || "Другое";
 const fm = n => Math.round(n).toLocaleString("ru-RU") + " ₽";
 const iso = d => d.toLocaleDateString("sv");
 const today = iso(new Date());
-
-// 1 = понедельник ... 7 = воскресенье
 const isoWeekday = (d = new Date()) => d.getDay() || 7;
-
-// чтобы комментарий вроде "<b>" не ломал страницу
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
 let S = { income: {}, incomeSrc: {}, savePercent: 20, pct: {}, piggy: [], topups: [], ex: [], subs: [], habits: [] };
@@ -92,13 +86,19 @@ $("expCat").innerHTML = catOptions;
 $("catFilter").innerHTML = '<option value="">Все</option>' + catOptions;
 $("expDate").value = today;
 
-// плитки категорий как в CoinKeeper: тап вместо выпадающего списка
 $("expChips").innerHTML = cn.map(c => `<button type="button" data-c="${c}" onclick="setCat('${c}')">${icon(ICONS[c], 16)} ${c}</button>`).join("");
+
 function setCat(c) {
     $("expCat").value = c;
     document.querySelectorAll("#expChips button").forEach(b => b.classList.toggle("on", b.dataset.c === c));
 }
 setCat(cn[0]);
+
+function setUnit(v, btn) {
+    $("incomeUnit").value = v;
+    document.querySelectorAll(".unit-btn").forEach(b => b.classList.remove("on"));
+    btn.classList.add("on");
+}
 
 function openTab(tab) {
     document.querySelectorAll("#nav button").forEach(b => b.classList.toggle("on", b.dataset.t === tab));
@@ -109,7 +109,6 @@ document.querySelectorAll("#nav button").forEach(btn => {
     btn.onclick = () => openTab(btn.dataset.t);
 });
 
-// пополнения
 function showTopup() {
     $("topupForm").classList.remove("hidden");
     $("expenseForm").classList.add("hidden");
@@ -134,7 +133,6 @@ function doTopup() {
 
 const delTopup = id => { S.topups = S.topups.filter(t => t.id != id); save(); render(); };
 
-// траты
 function showExpense() {
     openTab("o");
     $("expenseForm").classList.remove("hidden");
@@ -161,7 +159,6 @@ function doExpense() {
     render();
 }
 
-// сводка месяца: куда ушли деньги, где вышел за бюджет
 function openSummary() {
     const m = $("month").value;
     const st = monthStats(m);
@@ -177,7 +174,6 @@ function openSummary() {
         return;
     }
 
-    // расходы по категориям
     const by = {};
     st.ex.forEach(e => by[e.c] = (by[e.c] || 0) + e.a);
     const cats = Object.entries(by).sort((a, b) => b[1] - a[1]);
@@ -187,7 +183,6 @@ function openSummary() {
             <div class="cat-bar-track"><div class="cat-bar-fill" style="width:${(v / cats[0][1] * 100).toFixed(1)}%;background:${CATS[c]}"></div></div>
         </div>`).join("");
 
-    // бюджет на траты и дневной лимит (равная доля на каждый день)
     const budget = st.income - st.saved - st.fixed + st.topups;
     const dayLimit = budget / dim;
     const byDay = Array(dim).fill(0);
@@ -227,9 +222,7 @@ function openSummary() {
 
 const del = id => { S.ex = S.ex.filter(e => e.id != id); save(); render(); };
 
-// план
 function saveIncome() {
-    // доход можно вписать за неделю: переводим в месячный по числу дней в месяце
     const m = $("month").value;
     const amount = +$("income").value || 0;
     const unit = $("incomeUnit").value;
@@ -237,8 +230,8 @@ function saveIncome() {
     S.incomeSrc[m] = { amount, unit };
     S.income[m] = unit === "week" ? Math.round(amount * daysInMonth / 7) : amount;
     const pct = Math.min(100, Math.max(0, +$("savePercent").value || 0));
-    S.savePercent = pct;                  // для новых месяцев
-    S.pct[$("month").value] = pct;        // старые месяцы не пересчитываются
+    S.savePercent = pct;
+    S.pct[$("month").value] = pct;
     save();
     render();
 }
@@ -255,7 +248,6 @@ function addSub() {
 
 const dsub = id => { S.subs = S.subs.filter(x => x.id != id); save(); render(); };
 
-// привычки
 function addHabit() {
     const name = $("habitName").value.trim();
     if (!name) return;
@@ -269,10 +261,9 @@ function toggleHabitDay(habitId, day) {
     const h = S.habits.find(x => x.id == habitId);
     if (!h) return;
     if (!h.days) h.days = [...ALL_DAYS];
-
     const i = h.days.indexOf(day);
     if (i > -1) {
-        if (h.days.length > 1) h.days.splice(i, 1); // хотя бы один день должен остаться
+        if (h.days.length > 1) h.days.splice(i, 1);
     } else {
         h.days.push(day);
         h.days.sort((a, b) => a - b);
@@ -281,7 +272,6 @@ function toggleHabitDay(habitId, day) {
     render();
 }
 
-// последний запланированный день до сегодняшнего
 function getPrevScheduledDate(days) {
     const d = new Date();
     for (let i = 0; i < 7; i++) {
@@ -291,7 +281,6 @@ function getPrevScheduledDate(days) {
     return null;
 }
 
-// серия сгорает, если пропустил запланированный день
 function currentStreak(h) {
     const days = h.days || ALL_DAYS;
     const alive = h.lastDate === today || h.lastDate === getPrevScheduledDate(days);
@@ -301,11 +290,9 @@ function currentStreak(h) {
 function checkHabit(id) {
     const h = S.habits.find(x => x.id == id);
     if (!h) return;
-
     const days = h.days || ALL_DAYS;
     if (!days.includes(isoWeekday())) return toast("Не запланировано на сегодня");
     if (h.lastDate === today) return toast("Уже выполнено сегодня");
-
     h.streak = h.lastDate === getPrevScheduledDate(days) ? h.streak + 1 : 1;
     h.lastDate = today;
     save();
@@ -315,7 +302,6 @@ function checkHabit(id) {
 
 const dhabit = id => { S.habits = S.habits.filter(x => x.id != id); save(); render(); };
 
-// переключатель «Сегодня / Неделя» для дашбордов
 let period = "day";
 document.querySelectorAll(".seg button").forEach(btn => {
     btn.onclick = () => {
@@ -325,7 +311,6 @@ document.querySelectorAll(".seg button").forEach(btn => {
     };
 });
 
-// процент накоплений у каждого месяца свой
 const pctFor = m => S.pct[m] ?? S.savePercent;
 
 function monthStats(m) {
@@ -341,24 +326,17 @@ function monthStats(m) {
 function calc() {
     const m = $("month").value;
     const st = monthStats(m);
-
     const by = {};
     cn.forEach(c => by[c] = 0);
     st.ex.forEach(e => by[e.c] = (by[e.c] || 0) + e.a);
-
     const [y, mo] = m.split("-").map(Number);
     const daysInMonth = new Date(y, mo, 0).getDate();
     const rem = today.startsWith(m) ? daysInMonth - +today.slice(8) + 1 : 0;
-
-    // лимит на день считаем «с утра»: всё, что потрачено не сегодня, делим на оставшиеся дни.
-    // Трата сегодня не меняет лимит, а только уменьшает остаток на сегодня
     const spentToday = st.ex.filter(e => e.d === today).reduce((sum, e) => sum + e.a, 0);
-    // пополнение «сегодня» гасит траты «сегодня»: чистые траты = траты − пополнения за день
     const topupsToday = S.topups.filter(t => t.date === today && t.date.startsWith(m)).reduce((sum, t) => sum + t.amount, 0);
     const netToday = spentToday - topupsToday;
     const rate = rem > 0 ? Math.max(0, st.balance + netToday) / rem : 0;
-    const weekDays = Math.min(rem, 8 - isoWeekday());   // дней до воскресенья, включая сегодня
-
+    const weekDays = Math.min(rem, 8 - isoWeekday());
     return {
         m, ...st, by, rem, rate, spentToday, netToday, weekDays,
         topupsMonth: st.topups,
@@ -368,7 +346,6 @@ function calc() {
     };
 }
 
-// копилка = процент с дохода + нетронутые остатки прошлых месяцев + то, что положил вручную
 function piggyBank() {
     const nowMonth = today.slice(0, 7);
     const months = new Set([
@@ -379,7 +356,7 @@ function piggyBank() {
     let percentSum = 0, leftoverSum = 0;
     const rows = [...months].filter(m => m <= nowMonth).sort().map(m => {
         const st = monthStats(m);
-        const leftover = m < nowMonth ? Math.max(0, st.balance) : 0; // текущий месяц ещё не закончился
+        const leftover = m < nowMonth ? Math.max(0, st.balance) : 0;
         percentSum += st.saved;
         leftoverSum += leftover;
         return { m, saved: st.saved, leftover };
@@ -416,11 +393,10 @@ function renderPiggy() {
     const monthRows = p.rows.filter(r => r.saved || r.leftover).reverse().map(r =>
         `<div class="li"><span>${monthName(r.m)}<span class="mu"> · процент ${fm(r.saved)}${r.leftover ? " + остаток " + fm(r.leftover) : ""}</span></span><span class="ok">+${fm(r.saved + r.leftover)}</span></div>`);
     const manualRows = S.piggy.slice().reverse().map(x =>
-        `<div class="li"><span>${x.date.slice(5)}<span class="mu"> · вручную</span></span><span class="ok">+${fm(x.amount)}<span class="x" onclick="delPiggy(${x.id})">✕</span></span></div>`);
+        `<div class="li"><span>${x.date.slice(5)}<span class="mu"> · вручную</span></span><span class="ok">+${fm(x.amount)}<span class="x" onclick="delPiggy(${x.id})"></span></span></div>`);
     $("piggyRows").innerHTML = [...manualRows, ...monthRows].join("");
 }
 
-// попадает ли дата в выбранный период (сегодня или текущая неделя пн-вс)
 function inPeriod(dateStr) {
     if (period === "day") return dateStr === today;
     const mon = new Date();
@@ -443,16 +419,13 @@ function renderCatDashboard() {
     list.forEach(e => by[e.c] = (by[e.c] || 0) + e.a);
     const total = list.reduce((sum, e) => sum + e.a, 0);
     const maxVal = Math.max(...Object.values(by));
-
     const bars = cn.filter(c => by[c]).map(c => `
         <div class="cat-bar">
             <div class="cat-bar-header"><span class="cat-bar-name" style="color:${CATS[c]}">${c}</span><span class="cat-bar-amount">${fm(by[c])}</span></div>
             <div class="cat-bar-track"><div class="cat-bar-fill" style="width:${(by[c] / maxVal * 100).toFixed(1)}%;background:${CATS[c]}"></div></div>
         </div>`).join("");
-
     const items = list.map(e => `
         <div class="topup-mini"><span class="who">${badge(e.c)}<span>${e.n ? esc(e.n) : e.c}<small class="mu">${period === "week" ? e.d.slice(5) + " · " : ""}${e.c}</small></span></span><span>${fm(e.a)}</span></div>`).join("");
-
     $("catDashboard").innerHTML =
         `<div class="topup-total" style="margin:0 0 12px;padding:0;border:0"><span>Потрачено ${periodName()}</span><span>${fm(total)}</span></div>` +
         bars + `<div class="items">${items}</div>`;
@@ -472,21 +445,17 @@ function renderTopupDashboard() {
         `<div class="items">${rows}</div>`;
 }
 
-// большая карточка: лимит и остаток на сегодня и на неделю
 function renderHero(k) {
     const hasBudget = k.rem > 0 && (k.income > 0 || k.topupsMonth > 0);
-
     const show = (id, left, limit, spentPart) => {
         $(id + "Left").textContent = hasBudget ? fm(left) : "—";
         $(id + "Left").className = "hero-value " + (hasBudget ? (left < 0 ? "bad" : "ok") : "");
-        // полоска меняет цвет: синяя -> жёлтая (больше 75%) -> красная (лимит съеден)
         const ratio = !hasBudget ? 0 : left < 0 ? 1 : limit > 0 ? spentPart / limit : 0;
         $(id + "Bar").style.width = Math.max(0, Math.min(100, ratio * 100)) + "%";
         $(id + "Bar").style.background = ratio >= 1 ? "var(--bad)" : ratio > 0.75 ? "var(--gold)" : "var(--ac)";
     };
     show("today", k.todayLeft, k.rate, k.netToday);
     show("week", k.weekLeft, k.weekLimit, k.netToday);
-
     if (!hasBudget) {
         const hint = k.rem ? "Заполни доход во вкладке «План»" : "Выбери текущий месяц";
         $("todaySub").textContent = hint;
@@ -503,21 +472,18 @@ function renderHero(k) {
 
 function render() {
     const k = calc();
-
     renderHero(k);
-
     $("balance").textContent = fm(k.balance);
     $("balance").className = "big " + (k.balance < 0 ? "bad" : "");
     $("spent").textContent = fm(k.spent);
-
     renderCatDashboard();
     renderTopupDashboard();
     renderPiggy();
 
-    // вкладка «План»
     const src = S.incomeSrc[k.m] || { amount: k.income, unit: "month" };
     $("income").value = src.amount || "";
     $("incomeUnit").value = src.unit;
+    document.querySelectorAll(".unit-btn").forEach(b => b.classList.toggle("on", b.dataset.v === src.unit));
     $("savePercent").value = pctFor(k.m);
     $("incomeInfo").innerHTML = k.income > 0
         ? `${src.unit === "week" ? `Доход за месяц: <b>${fm(k.income)}</b> (${fm(src.amount)} в неделю, ≈ ${(k.income / src.amount).toFixed(1)} нед.)<br>` : ""}В копилку уходит: <b>${fm(k.saved)}</b><br>Постоянные платежи: <b>${fm(k.fixed)}</b><br>Чистый бюджет на жизнь: <b style="color:var(--ac)">${fm(k.income - k.saved - k.fixed)}</b>`
@@ -532,7 +498,6 @@ function render() {
         `<div class="li"><span>${esc(x.n)} · ${x.d}-го</span><span>${fm(x.a)}<span class="x" onclick="dsub(${x.id})">✕</span></span></div>`
     ).join("") || '<span class="mu">Пусто</span>';
 
-    // вкладка «Операции»
     const query = $("search").value.toLowerCase();
     const cat = $("catFilter").value;
     const rows = k.ex.filter(e => (!cat || e.c === cat) && (e.n + e.c).toLowerCase().includes(query));
@@ -541,7 +506,6 @@ function render() {
         `<div class="li"><span class="who">${badge(e.c)}<span>${e.n ? esc(e.n) : e.c}<small class="mu">${e.d.slice(5)} · ${e.c}</small></span></span><span>${fm(e.a)}<span class="x" onclick="del(${e.id})">✕</span></span></div>`
     ).join("") || emptyText("Операций пока нет");
 
-    // вкладка «Привычки»
     const todayDay = isoWeekday();
     $("habitsList").innerHTML = S.habits.map(h => {
         const days = h.days || ALL_DAYS;
@@ -563,12 +527,10 @@ function render() {
     }).join("") || emptyText("Добавь первую привычку");
 }
 
-// пока печатаешь комментарий, категория подставляется сама
 $("expNote").oninput = e => {
     if (e.target.value) setCat(guess(e.target.value));
 };
 
-// Enter отправляет форму
 [["expAmount", doExpense], ["expNote", doExpense],
  ["topupAmount", doTopup], ["piggyAmount", addPiggy], ["topupNote", doTopup], ["habitName", addHabit]
 ].forEach(([id, fn]) => {
@@ -577,7 +539,6 @@ $("expNote").oninput = e => {
 
 render();
 
-// чтобы сайт ставился как приложение и работал без интернета
 if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
     navigator.serviceWorker.register("sw.js").catch(() => {});
 }
