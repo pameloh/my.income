@@ -13,60 +13,155 @@
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html, body { overflow-x: hidden; }
 button { touch-action: manipulation; }
-body { margin: 0; background: var(--bg); color: var(--tx); font: 15px/1.5 Manrope, -apple-system, Arial, sans-serif; }
+
+body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--tx);
+    font: 15px/1.5 Manrope, -apple-system, Arial, sans-serif;
+}
+
 .w { max-width: 780px; margin: 0 auto; padding: 24px 20px; }
+
 h1 { font: 700 28px/1 'Space Grotesk', sans-serif; margin: 0; display: flex; align-items: center; gap: 10px; }
 .logo { width: 32px; height: 32px; flex: none; }
-h2 { font: 600 12px 'Space Grotesk', sans-serif; margin: 0 0 14px; text-transform: uppercase; letter-spacing: 1px; }
+
+h2 {
+    font: 600 12px 'Space Grotesk', sans-serif;
+    margin: 0 0 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
 .top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-.top input { background: var(--card); border: 1px solid var(--bd); border-radius: 8px; padding: 8px 12px; }
+
+.top input {
+    background: var(--card);
+    border: 1px solid var(--bd);
+    border-radius: 8px;
+    padding: 8px 12px;
+}
+
 nav { display: flex; gap: 4px; border-bottom: 1px solid var(--bd); margin-bottom: 20px; }
-nav button { border: 0; border-bottom: 2px solid transparent; border-radius: 0; color: var(--mu); padding: 10px 14px; font: 500 14px 'Space Grotesk', sans-serif; display: flex; align-items: center; }
-nav button span { margin-right: 6px; }
-.nav-ic { display: flex; }
-.i { display: block; flex: none; }
-nav button small { font-size: 14px; }
+
+nav button {
+    border: 0;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    color: var(--mu);
+    padding: 10px 14px;
+    font: 500 14px 'Space Grotesk', sans-serif;
+}
+
 @media (hover: hover) { nav button:hover { background: transparent; color: var(--tx); } }
 nav button.on { color: var(--tx); border-color: var(--ac); }
+
 .g { display: grid; gap: 12px; grid-template-columns: repeat(3, 1fr); margin-bottom: 12px; }
+
 .c { background: var(--card); border: 1px solid var(--bd); border-radius: 12px; padding: 16px; }
+
 .big { font: 700 24px/1.2 'Space Grotesk', sans-serif; margin-bottom: 4px; }
 .mu { color: var(--mu); font-size: 13px; }
 .ok { color: var(--ok); }
 .bad { color: var(--bad); }
-input, select, button { font: inherit; color: var(--tx); background: transparent; border: 0; border-bottom: 1px solid var(--bd); padding: 8px 4px; outline: 0; }
+
+input, select, button {
+    font: inherit;
+    color: var(--tx);
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid var(--bd);
+    padding: 8px 4px;
+    outline: 0;
+}
+
 input:focus, select:focus { border-color: var(--ac); }
 select option { background: var(--card); }
-button { cursor: pointer; border: 1px solid var(--ac); color: var(--ac); border-radius: 8px; padding: 8px 14px; font-size: 13px; font-weight: 500; transition: scale 150ms ease-out, background-color 150ms ease-out, color 150ms ease-out, border-color 150ms ease-out; }
-@media (prefers-reduced-motion: no-preference) { button:not(:disabled):active { scale: 0.96; } }
-@media (hover: hover) { button:hover { background: var(--ac); color: var(--btn); } }
+
+button {
+    cursor: pointer;
+    border: 1px solid var(--ac);
+    color: var(--ac);
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
 button.p { background: var(--ac); color: var(--btn); }
+@media (hover: hover) { button:hover { background: var(--ac); color: var(--btn); } }
 button.ghost { border-color: var(--bd); color: var(--mu); }
 @media (hover: hover) { button.ghost:hover { background: transparent; color: var(--tx); } }
-button:disabled { opacity: 0.4; cursor: not-allowed; background: transparent; color: var(--ac); }
+
+button { transition: scale 150ms ease-out, background-color 150ms ease-out, color 150ms ease-out, border-color 150ms ease-out; }
+@media (prefers-reduced-motion: no-preference) { button:not(:disabled):active { scale: 0.96; } }
+
+button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    background: transparent;
+    color: var(--ac);
+}
+
 .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 .row > input, .row > select { flex: 1; min-width: 80px; }
-.balance-card { background: radial-gradient(500px 220px at 50% -30%, rgba(122, 159, 212, 0.20), transparent), linear-gradient(135deg, #0d1a2e, #081020); border: 1px solid var(--bd); border-radius: 16px; padding: 28px 24px; margin-bottom: 16px; text-align: center; }
-.balance-label { font: 500 11px 'Space Grotesk', sans-serif; color: var(--mu); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; }
+
+/* главный блок с балансом */
+.balance-card {
+    background: radial-gradient(500px 220px at 50% -30%, rgba(122, 159, 212, 0.20), transparent), linear-gradient(135deg, #0d1a2e, #081020);
+    border: 1px solid var(--bd);
+    border-radius: 16px;
+    padding: 28px 24px;
+    margin-bottom: 16px;
+    text-align: center;
+}
+
+.balance-label {
+    font: 500 11px 'Space Grotesk', sans-serif;
+    color: var(--mu);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+}
+
 .balance-sub { font-size: 13px; color: var(--mu); margin-bottom: 18px; }
 .balance-actions { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+
 .btn-topup, .btn-expense { padding: 10px 20px; border-radius: 10px; font: 600 13px 'Space Grotesk', sans-serif; }
 .btn-topup { background: rgba(90, 184, 154, 0.12); border-color: var(--ok); color: var(--ok); }
 @media (hover: hover) { .btn-topup:hover { background: var(--ok); color: var(--btn); } }
 .btn-expense { background: rgba(212, 100, 92, 0.12); border-color: var(--bad); color: var(--bad); }
 @media (hover: hover) { .btn-expense:hover { background: var(--bad); color: var(--btn); } }
+
 .hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 22px; }
 .hero-value { font: 700 44px/1 'Space Grotesk', sans-serif; letter-spacing: -1px; margin-bottom: 12px; }
+
 .meter { height: 6px; background: var(--bd); border-radius: 3px; overflow: hidden; margin-bottom: 8px; }
 .meter i { display: block; height: 100%; width: 0; background: var(--ac); border-radius: 3px; transition: width 0.3s; }
+
 .seg { display: flex; gap: 6px; margin-bottom: 12px; }
 .seg button.on { background: var(--ac); color: var(--btn); }
-.form-block { background: var(--card); border: 1px solid var(--ac); border-radius: 12px; padding: 14px; margin-bottom: 16px; display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* формы */
+.form-block {
+    background: var(--card);
+    border: 1px solid var(--ac);
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 16px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
 .form-block.hidden { display: none; }
 .form-block input, .form-block select { flex: 1; min-width: 120px; }
+
+/* дашборды */
 .dashboards { display: grid; gap: 12px; grid-template-columns: 1fr 1fr; margin-bottom: 12px; }
 .dashboard { min-height: 200px; }
 .dashboard .items { max-height: 220px; overflow-y: auto; margin-top: 10px; }
+
 .cat-bar { margin-bottom: 12px; }
 .cat-bar-header { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px; }
 .cat-bar-name { font-weight: 600; }
@@ -74,49 +169,109 @@ button:disabled { opacity: 0.4; cursor: not-allowed; background: transparent; co
 .cat-bar-track { height: 6px; background: var(--bd); border-radius: 3px; overflow: hidden; }
 .cat-bar-fill { height: 100%; border-radius: 3px; transition: width 0.3s; }
 .cat-bar-percent { font-size: 11px; color: var(--mu); margin-top: 2px; text-align: right; }
+
 .topup-mini { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--bd); font-size: 13px; }
-.topup-mini:last-child { border: 0; }
 .topup-mini-amount { color: var(--ok); font: 600 13px 'Space Grotesk', sans-serif; }
 .topup-total { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--bd); display: flex; justify-content: space-between; font: 600 14px 'Space Grotesk', sans-serif; }
+
+/* план и списки */
 .plan-grid { display: grid; gap: 12px; margin-bottom: 12px; }
 .plan-block { padding: 20px; }
+
 .li { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--bd); }
-.li:last-child { border: 0; }
+.li:last-child, .topup-mini:last-child { border: 0; }
 .x { color: var(--mu); cursor: pointer; margin-left: 8px; font-size: 16px; }
 @media (hover: hover) { .x:hover { color: var(--bad); } }
+
+/* привычки */
 .habit-card { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 6px; }
 .habit-name { font: 600 15px 'Space Grotesk', sans-serif; }
 .habit-streak { color: var(--gold); line-height: 1; font: 700 32px 'Space Grotesk', sans-serif; display: flex; align-items: center; gap: 8px; }
 .habit-streak-label { font-size: 12px; color: var(--mu); }
 .habit-days { display: flex; gap: 4px; margin: 6px 0; flex-wrap: wrap; justify-content: center; }
 .habit-btn { width: 100%; margin-top: 6px; }
-.day-btn { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--bd); color: var(--mu); font-size: 11px; padding: 0; }
+
+.day-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 1px solid var(--bd);
+    color: var(--mu);
+    font-size: 11px;
+    padding: 0;
+}
+
 .day-btn.active { background: var(--ac); color: var(--btn); border-color: var(--ac); }
-#toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: var(--ac); color: var(--btn); padding: 10px 18px; border-radius: 20px; opacity: 0; transition: 0.3s; pointer-events: none; z-index: 1000; font: 500 14px 'Space Grotesk', sans-serif; }
+
+#toast {
+    position: fixed;
+    left: 50%;
+    bottom: 24px;
+    transform: translateX(-50%);
+    background: var(--ac);
+    color: var(--btn);
+    padding: 10px 18px;
+    border-radius: 20px;
+    opacity: 0;
+    transition: 0.3s;
+    pointer-events: none;
+    z-index: 1000;
+    font: 500 14px 'Space Grotesk', sans-serif;
+}
+
+/* идеи у конкурентов: иконки категорий (Copilot, Spendee), плитки категорий (CoinKeeper),
+   нижнее меню и плавающая кнопка «+» как в мобильных приложениях */
 .date-line { color: var(--mu); font-size: 13px; margin-top: 6px; }
 .monthbar { display: flex; align-items: center; gap: 4px; }
+
 button.icon { width: 36px; height: 36px; padding: 0; border-radius: 50%; font-size: 20px; line-height: 1; border-color: var(--bd); color: var(--mu); }
 @media (hover: hover) { button.icon:hover { background: var(--card); color: var(--tx); } }
+
 .ico { width: 36px; height: 36px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 18px; flex: none; }
 .who { display: flex; align-items: center; gap: 10px; min-width: 0; }
 .who > span:last-child { min-width: 0; overflow-wrap: anywhere; }
 .who small { display: block; font-size: 11px; }
+
 .chips { display: flex; gap: 6px; flex-wrap: wrap; width: 100%; }
 .chips button { border-color: var(--bd); color: var(--tx); border-radius: 20px; padding: 6px 12px; }
 .chips button.on { background: var(--ac); color: var(--btn); border-color: var(--ac); }
+
 .empty { text-align: center; padding: 24px 0; color: var(--mu); font-size: 13px; }
+
+nav button { display: flex; align-items: center; }
+nav button span { margin-right: 6px; }
+.nav-ic { display: flex; }
+.i { display: block; flex: none; }
+nav button small { font-size: 14px; }
+
+/* сводка месяца */
 .summary-card { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
-dialog { background: var(--card); color: var(--tx); border: 1px solid var(--bd); border-radius: 16px; padding: 20px; width: min(560px, calc(100% - 24px)); max-height: 86vh; overflow-y: auto; overscroll-behavior: contain; }
+
+dialog {
+    background: var(--card);
+    color: var(--tx);
+    border: 1px solid var(--bd);
+    border-radius: 16px;
+    padding: 20px;
+    width: min(560px, calc(100% - 24px));
+    max-height: 86vh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
 dialog::backdrop { background: rgba(2, 4, 9, 0.72); }
+
 .sheet-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
 .sum-title { font: 700 22px 'Space Grotesk', sans-serif; text-transform: capitalize; }
 .sum-verdict { font: 600 17px 'Space Grotesk', sans-serif; margin-bottom: 14px; }
 .sum-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
 .sum-cell { background: var(--bg); border: 1px solid var(--bd); border-radius: 10px; padding: 12px; }
 dialog h2 { margin-top: 20px; }
+
+/* телефоны: тот же интерфейс, что на компьютере, только компактнее */
 @media (max-width: 600px) {
     .w { padding: calc(14px + env(safe-area-inset-top)) 12px calc(24px + env(safe-area-inset-bottom)); }
     input, select { font-size: 16px; }
+
     .top { flex-wrap: nowrap; gap: 8px; margin-bottom: 14px; }
     .top > div:first-child { min-width: 0; }
     h1 { font-size: 22px; gap: 8px; }
@@ -125,11 +280,13 @@ dialog h2 { margin-top: 20px; }
     .monthbar { flex: none; gap: 2px; }
     .top input { padding: 6px 8px; width: 128px; }
     button.icon { width: 30px; height: 30px; font-size: 18px; }
+
     nav { margin-bottom: 14px; }
     nav button { flex: 1; justify-content: center; padding: 9px 2px; }
     nav button span { margin-right: 4px; }
     nav button small { font-size: 13px; }
     .nav-ic svg { width: 17px; height: 17px; }
+
     .balance-card { padding: 18px 14px; border-radius: 14px; }
     .hero-grid { grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px; }
     .hero-value { font-size: 28px; margin-bottom: 8px; }
@@ -137,15 +294,19 @@ dialog h2 { margin-top: 20px; }
     .seg button { padding: 7px 14px; min-height: 0; }
     .balance-sub { font-size: 11px; margin-bottom: 0; }
     .btn-topup, .btn-expense { padding: 9px 14px; }
+
     .g { grid-template-columns: repeat(3, 1fr); gap: 8px; }
     #habitsList { grid-template-columns: 1fr; }
     .c { padding: 12px; }
     .big { font-size: 16px; }
     .g .mu { font-size: 11px; }
     .dashboards { grid-template-columns: 1fr; }
+
     #expenseForm input, #topupForm input { min-width: 100%; }
+
     dialog { margin: auto auto 0; width: 100%; max-width: 100%; border-radius: 16px 16px 0 0; max-height: 90vh; padding-bottom: calc(20px + env(safe-area-inset-bottom)); }
 }
+
 @media (max-width: 380px) {
     .hero-value { font-size: 24px; }
     .nav-ic { display: none; }
