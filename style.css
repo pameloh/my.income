@@ -14,21 +14,10 @@
 * { 
     box-sizing: border-box; 
     -webkit-tap-highlight-color: transparent;
-    -webkit-touch-callout: none;
 }
 
 html, body { 
     overflow-x: hidden; 
-    -webkit-text-size-adjust: 100%;
-}
-
-button { 
-    touch-action: manipulation;
-    -webkit-appearance: none;
-    appearance: none;
-    user-select: none;
-    -webkit-user-select: none;
-    cursor: pointer;
 }
 
 body {
@@ -36,8 +25,6 @@ body {
     background: var(--bg);
     color: var(--tx);
     font: 15px/1.5 Manrope, -apple-system, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
 }
 
 .w { max-width: 780px; margin: 0 auto; padding: 24px 20px; }
@@ -68,12 +55,13 @@ nav button {
     border-bottom: 2px solid transparent !important;
     border-radius: 0 !important;
     background: transparent !important;
-    color: var(--mu);
+    color: var(--mu) !important;
     padding: 10px 14px !important;
     font: 500 14px 'Space Grotesk', sans-serif !important;
     display: flex;
     align-items: center;
-    box-shadow: none !important;
+    -webkit-appearance: none;
+    appearance: none;
 }
 
 nav button span { margin-right: 6px; }
@@ -81,8 +69,8 @@ nav button span { margin-right: 6px; }
 .i { display: block; flex: none; }
 nav button small { font-size: 14px; }
 
-@media (hover: hover) { nav button:hover { background: transparent !important; color: var(--tx); } }
-nav button.on { color: var(--tx); border-color: var(--ac) !important; }
+@media (hover: hover) { nav button:hover { background: transparent !important; color: var(--tx) !important; } }
+nav button.on { color: var(--tx) !important; border-color: var(--ac) !important; }
 
 .g { display: grid; gap: 12px; grid-template-columns: repeat(3, 1fr); margin-bottom: 12px; }
 
@@ -101,20 +89,23 @@ input, select {
     border-bottom: 1px solid var(--bd);
     padding: 8px 4px;
     outline: 0;
-    -webkit-appearance: none;
-    appearance: none;
 }
 
 input:focus, select:focus { border-color: var(--ac); }
 select option { background: var(--card); }
 
 button {
+    cursor: pointer;
     border: 1px solid var(--ac);
     color: var(--ac);
     border-radius: 8px;
     padding: 8px 14px;
     font-size: 13px;
     font-weight: 500;
+    background: transparent;
+    -webkit-appearance: none;
+    appearance: none;
+    touch-action: manipulation;
     transition: scale 150ms ease-out, background-color 150ms ease-out, color 150ms ease-out, border-color 150ms ease-out;
 }
 
