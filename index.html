@@ -6,14 +6,15 @@
     <meta name="theme-color" content="#05080f">
     <meta name="apple-mobile-web-app-title" content="Финансы">
     <link rel="manifest" href="manifest.webmanifest">
-    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Unbounded:wght@400;500;600;700&display=swap" rel="stylesheet">
     <title>Мои финансы</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%230d1a2e'/%3E%3Cpath d='M8 21l5-6 4 3 7-9' fill='none' stroke='%237a9fd4' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='24' cy='9' r='2' fill='%23e6c44d'/%3E%3C/svg%3E">
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=7">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="w">
@@ -31,9 +32,9 @@
                 <div class="date-line" id="dateLine"></div>
             </div>
             <div class="monthbar">
-                <button class="icon" onclick="shiftMonth(-1)">‹</button>
+                <button class="icon" onclick="shiftMonth(-1)" aria-label="Прошлый месяц">‹</button>
                 <input type="month" id="month">
-                <button class="icon" onclick="shiftMonth(1)">›</button>
+                <button class="icon" onclick="shiftMonth(1)" aria-label="Следующий месяц">›</button>
             </div>
         </div>
         <nav id="nav">
@@ -130,14 +131,17 @@
                         <input id="income" type="number" placeholder="Доход, ₽">
                         <button class="p" onclick="saveIncome()">OK</button>
                     </div>
-                    <div class="row" style="margin-top:10px">
-                        <select id="incomeUnit" style="flex:1">
-                            <option value="month">в месяц</option>
-                            <option value="week">в неделю</option>
-                        </select>
+                    <select id="incomeUnit" hidden>
+                        <option value="month">в месяц</option>
+                        <option value="week">в неделю</option>
+                    </select>
+                    <div class="ios-seg" id="incomeSeg" role="radiogroup" aria-label="Период дохода" data-v="month">
+                        <i class="ios-thumb"></i>
+                        <button type="button" role="radio" data-v="month">В месяц</button>
+                        <button type="button" role="radio" data-v="week">В неделю</button>
                     </div>
                     <div class="row" style="margin-top:12px">
-                        <input id="savePercent" type="number" placeholder="%" style="max-width:60px">
+                        <input id="savePercent" type="number" placeholder="%" style="max-width:60px" onchange="saveIncome()">
                         <span class="mu" style="line-height:36px">% от дохода сразу в копилку</span>
                     </div>
                     <div class="mu" id="incomeInfo" style="margin-top:12px; line-height:1.6"></div>
