@@ -62,11 +62,13 @@ const save = () => {
     try { localStorage.setItem("fin6", JSON.stringify(S)); } catch (e) {}
 };
 
+let toastTimer;
 const toast = text => {
     const el = $("toast");
     el.textContent = text;
     el.style.opacity = 1;
-    setTimeout(() => el.style.opacity = 0, 1800);
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.style.opacity = 0, 1800);
 };
 
 $("month").value = today.slice(0, 7);
@@ -94,11 +96,19 @@ function setCat(c) {
 }
 setCat(cn[0]);
 
-function setUnit(v, btn) {
-    $("incomeUnit").value = v;
-    document.querySelectorAll(".unit-btn").forEach(b => b.classList.remove("on"));
-    btn.classList.add("on");
+function setSeg(v) {
+    const seg = $("incomeSeg");
+    seg.dataset.v = v;
+    seg.querySelectorAll("button").forEach(b => b.setAttribute("aria-checked", b.dataset.v === v));
 }
+
+document.querySelectorAll("#incomeSeg button").forEach(b => {
+    b.onclick = () => {
+        $("incomeUnit").value = b.dataset.v;
+        setSeg(b.dataset.v);
+        if (+$("income").value) saveIncome();
+    };
+});
 
 function openTab(tab) {
     document.querySelectorAll("#nav button").forEach(b => b.classList.toggle("on", b.dataset.t === tab));
@@ -393,7 +403,7 @@ function renderPiggy() {
     const monthRows = p.rows.filter(r => r.saved || r.leftover).reverse().map(r =>
         `<div class="li"><span>${monthName(r.m)}<span class="mu"> · процент ${fm(r.saved)}${r.leftover ? " + остаток " + fm(r.leftover) : ""}</span></span><span class="ok">+${fm(r.saved + r.leftover)}</span></div>`);
     const manualRows = S.piggy.slice().reverse().map(x =>
-        `<div class="li"><span>${x.date.slice(5)}<span class="mu"> · вручную</span></span><span class="ok">+${fm(x.amount)}<span class="x" onclick="delPiggy(${x.id})"></span></span></div>`);
+        `<div class="li"><span>${x.date.slice(5)}<span class="mu"> · вручную</span></span><span class="ok">+${fm(x.amount)}<span class="x" onclick="delPiggy(${x.id})">✕</span></span></div>`);
     $("piggyRows").innerHTML = [...manualRows, ...monthRows].join("");
 }
 
@@ -483,7 +493,7 @@ function render() {
     const src = S.incomeSrc[k.m] || { amount: k.income, unit: "month" };
     $("income").value = src.amount || "";
     $("incomeUnit").value = src.unit;
-    document.querySelectorAll(".unit-btn").forEach(b => b.classList.toggle("on", b.dataset.v === src.unit));
+    setSeg(src.unit);
     $("savePercent").value = pctFor(k.m);
     $("incomeInfo").innerHTML = k.income > 0
         ? `${src.unit === "week" ? `Доход за месяц: <b>${fm(k.income)}</b> (${fm(src.amount)} в неделю, ≈ ${(k.income / src.amount).toFixed(1)} нед.)<br>` : ""}В копилку уходит: <b>${fm(k.saved)}</b><br>Постоянные платежи: <b>${fm(k.fixed)}</b><br>Чистый бюджет на жизнь: <b style="color:var(--ac)">${fm(k.income - k.saved - k.fixed)}</b>`
