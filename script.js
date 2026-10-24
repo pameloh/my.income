@@ -45,7 +45,7 @@ const ALL_DAYS = [1, 2, 3, 4, 5, 6, 7];
 
 const $ = id => document.getElementById(id);
 const guess = t => cn.find(c => RU[c] && RU[c].test(t)) || "Другое";
-const fm = n => Math.round(n).toLocaleString("ru-RU") + " ₽";
+const fm = n => Math.round(n).toLocaleString("ru-RU") + "\u00A0₽";
 const iso = d => d.toLocaleDateString("sv");
 const today = iso(new Date());
 const isoWeekday = (d = new Date()) => d.getDay() || 7;
