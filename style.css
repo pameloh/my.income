@@ -30,7 +30,7 @@ body {
 
 h1 { font: 700 26px/1 'Unbounded', sans-serif; margin: 0; display: flex; align-items: center; gap: 10px; letter-spacing: -0.3px; }
 .logo { width: 32px; height: 32px; flex: none; }
-h2 { font: 600 15px 'Unbounded', sans-serif; margin: 0 0 14px; color: var(--tx); }
+h2 { font: 600 15px 'IBM Plex Sans', sans-serif; margin: 0 0 14px; color: var(--tx); }
 
 :focus-visible { outline: 2px solid var(--ac); outline-offset: 2px; border-radius: 6px; }
 
@@ -49,7 +49,7 @@ nav button {
     background: transparent;
     color: var(--mu);
     padding: 10px 14px;
-    font: 500 14px 'Unbounded', sans-serif;
+    font: 500 14px 'IBM Plex Sans', sans-serif;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -89,7 +89,7 @@ button {
     color: var(--ac);
     border-radius: var(--r-ctl);
     padding: 9px 16px;
-    font: 500 13px 'Unbounded', sans-serif;
+    font: 500 13px 'IBM Plex Sans', sans-serif;
     background: transparent;
     -webkit-appearance: none;
     appearance: none;
@@ -110,6 +110,7 @@ button.icon { width: 36px; height: 36px; padding: 0; border-radius: 50%; font-si
 
 .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 .row > input, .row > select { flex: 1; min-width: 80px; }
+.row > button { align-self: stretch; }
 
 /* главный блок: число «сегодня» — главный акцент */
 .balance-card {
@@ -121,14 +122,14 @@ button.icon { width: 36px; height: 36px; padding: 0; border-radius: 50%; font-si
     box-shadow: 0 12px 32px -16px rgba(0, 0, 0, 0.6);
 }
 .hero-grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: 28px; margin-bottom: 22px; }
-.balance-label { font: 500 13px 'Unbounded', sans-serif; color: var(--mu); margin-bottom: 8px; }
+.balance-label { font: 500 13px 'IBM Plex Sans', sans-serif; color: var(--mu); margin-bottom: 8px; }
 .hero-value { font: 700 48px/1 'Unbounded', sans-serif; letter-spacing: -1.5px; margin-bottom: 14px; }
 .hero-grid > div:last-child .hero-value { font-size: 32px; letter-spacing: -1px; margin-top: 10px; margin-bottom: 18px; }
 .meter { height: 8px; background: rgba(28, 48, 80, 0.9); border-radius: 4px; overflow: hidden; margin-bottom: 10px; }
 .meter i { display: block; height: 100%; width: 0; background: var(--ac); border-radius: 4px; transition: width 0.4s ease-out, background-color 0.3s; }
 .balance-sub { font-size: 13px; color: var(--mu); }
 .balance-actions { display: flex; gap: 10px; }
-.btn-topup, .btn-expense { flex: 1; padding: 12px 20px; border-radius: 12px; font: 600 14px 'Unbounded', sans-serif; }
+.btn-topup, .btn-expense { flex: 1; padding: 12px 20px; border-radius: 12px; font: 600 14px 'IBM Plex Sans', sans-serif; }
 .btn-topup { background: rgba(94, 196, 162, 0.12); border-color: rgba(94, 196, 162, 0.6); color: var(--ok); }
 .btn-expense { background: var(--ac); border-color: var(--ac); color: var(--btn); }
 @media (hover: hover) {
@@ -161,8 +162,8 @@ button.icon { width: 36px; height: 36px; padding: 0; border-radius: 50%; font-si
 
 .topup-mini { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--bd); font-size: 13px; }
 .topup-mini:last-child { border: 0; }
-.topup-mini-amount { color: var(--ok); font: 600 13px 'Unbounded', sans-serif; }
-.topup-total { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--bd); display: flex; justify-content: space-between; font: 600 14px 'Unbounded', sans-serif; }
+.topup-mini-amount { color: var(--ok); font: 600 13px 'IBM Plex Sans', sans-serif; }
+.topup-total { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--bd); display: flex; justify-content: space-between; font: 600 14px 'IBM Plex Sans', sans-serif; }
 
 /* план */
 .plan-grid { display: grid; gap: 12px; margin-bottom: 12px; }
@@ -183,7 +184,7 @@ button.icon { width: 36px; height: 36px; padding: 0; border-radius: 50%; font-si
 
 /* привычки */
 .habit-card { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 6px; }
-.habit-name { font: 600 15px 'Unbounded', sans-serif; }
+.habit-name { font: 600 15px 'IBM Plex Sans', sans-serif; }
 .habit-streak { color: var(--gold); line-height: 1; font: 700 32px 'Unbounded', sans-serif; display: flex; align-items: center; gap: 8px; }
 .habit-streak-label { font-size: 12px; color: var(--mu); }
 .habit-days { display: flex; gap: 4px; margin: 6px 0; flex-wrap: wrap; justify-content: center; }
@@ -205,7 +206,7 @@ button.icon { width: 36px; height: 36px; padding: 0; border-radius: 50%; font-si
     transition: opacity 0.3s;
     pointer-events: none;
     z-index: 1000;
-    font: 500 14px 'Unbounded', sans-serif;
+    font: 500 14px 'IBM Plex Sans', sans-serif;
     white-space: nowrap;
 }
 
@@ -221,7 +222,7 @@ dialog h2 { margin-top: 20px; }
 
 /* переключатель как в iOS */
 .ios-seg { position: relative; display: grid; grid-template-columns: 1fr 1fr; margin-top: 12px; padding: 3px; background: var(--card2); border: 1px solid var(--bd); border-radius: 11px; }
-.ios-seg button { position: relative; z-index: 1; border: 0; background: transparent; color: var(--mu); padding: 9px 8px; border-radius: 9px; font: 500 14px 'Unbounded', sans-serif; transition: color 200ms; }
+.ios-seg button { position: relative; z-index: 1; border: 0; background: transparent; color: var(--mu); padding: 9px 8px; border-radius: 9px; font: 500 14px 'IBM Plex Sans', sans-serif; transition: color 200ms; }
 .ios-seg button[aria-checked="true"] { color: var(--btn); font-weight: 600; }
 @media (hover: hover) { .ios-seg button:hover { background: transparent; } }
 .ios-thumb { position: absolute; top: 3px; bottom: 3px; left: 3px; width: calc(50% - 3px); background: var(--ac); border-radius: 9px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35); transition: transform 280ms cubic-bezier(0.32, 0.72, 0, 1); }
@@ -235,7 +236,7 @@ dialog h2 { margin-top: 20px; }
 
     .top { flex-wrap: nowrap; margin-bottom: 14px; }
     .top > div:first-child { min-width: 0; }
-    h1 { font-size: 22px; gap: 8px; }
+    h1 { font-size: 18px; gap: 8px; }
     .logo { width: 26px; height: 26px; }
     .date-line { display: none; }
     .monthbar { flex: none; gap: 2px; }
@@ -275,7 +276,7 @@ dialog h2 { margin-top: 20px; }
     .g { gap: 8px; }
     #habitsList { grid-template-columns: 1fr; }
     .c { padding: 12px; }
-    .big { font-size: 16px; }
+    .big { font-size: 15px; white-space: nowrap; }
     .g .mu { font-size: 11px; }
     .dashboards { grid-template-columns: 1fr; }
     #expenseForm input, #topupForm input { min-width: 100%; }
@@ -284,7 +285,10 @@ dialog h2 { margin-top: 20px; }
 }
 
 @media (max-width: 380px) {
+    .logo { display: none; }
+    .top input { width: 116px; }
+    .big { font-size: 12px; }
     .hero-value { font-size: 30px; }
     .hero-grid > div:last-child .hero-value { font-size: 22px; }
-    h1 { font-size: 20px; }
+    h1 { font-size: 16px; }
 }
